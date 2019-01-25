@@ -1,40 +1,37 @@
-package smtp
+package mailer
 
 import (
 	"log"
 	"net/smtp"
 )
 
-type Config struct {
-	string identity,
-	string username,
-	string password,
-	string host,
-	string address,
+type Service struct {
+	Identity string
+	Username string
+	Password string
+	Host     string
+	Address  string
 }
 
-func (c *Config) SendMail(from string,to []string , msg []byte) {
-	auth := smtp.PlainAuth(c.identity, c.username, c.password, c.host) //smtp.PlainAuth("", "user@example.com", "password", "mail.example.com")
+func NewMailer(c Service) *Service {
+	return &Service{
+		Identity: c.Identity,
+		Username: c.Username,
+		Password: c.Password,
+		Host:     c.Host,
+		Address:  c.Address,
+	}
+}
 
-	// Connect to the server, authenticate, set the sender and recipient,
+func (c *Service) SendEmail(from string, to []string, msg []byte) error {
+	auth := smtp.PlainAuth(c.Identity, c.Username, c.Password, c.Host) //smtp.PlainAuth("", "user@example.com", "password", "mail.example.com")
 
-	// and send the email all in one step.
-
-	// to := []string{"recipient@example.net"}
-
-	// msg := []byte("To: recipient@example.net\r\n" +
-
-	// 	"Subject: discount Gophers!\r\n" +
-
-	// 	"\r\n" +
-
-	// 	"This is the email body.\r\n")
-
-	err := smtp.SendMail(c.address, auth, from, to, msg)
+	err := smtp.SendMail(c.Address, auth, from, to, msg)
 
 	if err != nil {
 
 		log.Fatal(err)
 
 	}
+	return err
 }
