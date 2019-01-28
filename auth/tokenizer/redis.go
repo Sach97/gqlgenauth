@@ -8,10 +8,12 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+//RedisClient holds our redis connexion
 type RedisClient struct {
 	redisdb *redis.Client
 }
 
+//NewRedisClient creates a new redis connexion
 func NewRedisClient() *RedisClient {
 
 	redisdb := redis.NewClient(&redis.Options{
@@ -24,14 +26,16 @@ func NewRedisClient() *RedisClient {
 	}
 }
 
+//Ping pings redis to see if we are connected
 func (client *RedisClient) Ping() error {
 	pong, err := client.redisdb.Ping().Result()
 	fmt.Println(pong, err)
 	return err
 }
 
-//TODO: rename this to GenerateToken
+//TODO: rename this to GenerateToken and add userid to arguments
 
+// GenerateString generate a random string
 func (client *RedisClient) GenerateString() (string, error) {
 	id, _ := uuid.NewV4()
 	exp := time.Duration(600 * time.Second) // 10 minutes
@@ -41,6 +45,7 @@ func (client *RedisClient) GenerateString() (string, error) {
 	return id.String(), err
 }
 
+// GetToken token retrieves the value of the token from our storage
 func (client *RedisClient) GetToken(key string) (string, error) {
 	val, err := client.redisdb.Get(key).Result()
 	return val, err
