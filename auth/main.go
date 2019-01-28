@@ -1,29 +1,27 @@
 package main
 
 import (
-	"fmt"
-
-	tokenizer "github.com/Sach97/gqlgenauth/auth/tokenizer"
-	// mailer "github.com/Sach97/gqlgenauth/auth/mailer"
+	gcontext "github.com/Sach97/gqlgenauth/auth/context"
+	db "github.com/Sach97/gqlgenauth/auth/db"
 )
 
 func main() {
 
 	// // Token stuffs
-	RedisClient := tokenizer.NewRedisClient()
-	client := tokenizer.Tokenizer{RedisClient}
+	// RedisClient := tokenizer.NewRedisClient()
+	// client := tokenizer.Tokenizer{RedisClient}
 
-	token, err := client.GenerateString()
-	fmt.Println(token)
-	if err != nil {
-		panic(err)
-	}
+	// token, err := client.GenerateString()
+	// fmt.Println(token)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	value, err := client.GetToken(token)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(value)
+	// value, err := client.GetToken(token)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println(value)
 
 	// // Mail stuffs
 	// sendgrid := os.Getenv("SENDGRID")
@@ -55,4 +53,15 @@ func main() {
 	// payload := deeplinker.Payload{DynamicLinkInfo: &dynamicLinkInfo}
 	// firebase := deeplinker.NewFireBaseClient(apiKey)
 	// firebase.GetDynamicLink(&payload)
+
+	// // DB Stuffs
+	config := gcontext.LoadConfig(".")
+
+	postgres := db.Strategy(db.Postgres{})
+
+	client, err := postgres.OpenDB(config)
+	if err != nil {
+		panic(err)
+	}
+	client.Ping()
 }

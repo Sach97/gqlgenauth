@@ -1,0 +1,9 @@
+app-name = "gqlgen-starter"
+version = 1.0
+
+[db]
+host = "localhost"
+port = "5433"
+user = "postgres-dev"
+password = "s3cr3tp4ssw0rd"
+dbname = "dev"
