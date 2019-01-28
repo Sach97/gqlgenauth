@@ -6,7 +6,7 @@ import (
 
 func main() {
 
-	// client := utils.New()
+	// client := utils.NewTokenizer()
 
 	// token, err := client.GenerateString()
 	// if err != nil {
@@ -45,6 +45,6 @@ func main() {
 	dynamicLinkInfo := deeplinking.DynamicLinkInfo{DomainURIPrefix: "https://minorys.page.link", Link: "https://ecstatic-heisenberg-ea2789.netlify.com/confirmation", AndroidInfo: &androidInfo}
 
 	payload := deeplinking.Payload{DynamicLinkInfo: &dynamicLinkInfo}
-	firebase := deeplinking.NewClient(apiKey)
+	firebase := deeplinking.NewFireBaseClient(apiKey)
 	firebase.GetDynamicLink(&payload)
 }

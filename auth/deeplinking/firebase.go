@@ -30,7 +30,7 @@ type AndroidInfo struct {
 }
 
 // Client is interface structure
-type Client struct {
+type FireBaseClient struct {
 	Endpoint string
 	APIKey   string
 }
@@ -55,16 +55,16 @@ type Warning struct {
 	WarningMessage string
 }
 
-// NewClient instantiate a new Client
-func NewClient(apiKey string) *Client {
-	return &Client{
+// NewFireBaseClient instantiate a new Client
+func NewFireBaseClient(apiKey string) *FireBaseClient {
+	return &FireBaseClient{
 		Endpoint: DefaultEndpoint,
 		APIKey:   apiKey,
 	}
 }
 
 // GetDynamicLink creates a new firebase link
-func (c *Client) GetDynamicLink(p *Payload) {
+func (c *FireBaseClient) GetDynamicLink(p *Payload) {
 
 	payload, _ := json.Marshal(p)
 
