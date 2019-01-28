@@ -1,4 +1,4 @@
-package deeplinking
+package deeplinker
 
 import (
 	"bytes"
@@ -11,6 +11,18 @@ const (
 	// DefaultEndpoint contains endpoint URL of FCM service.
 	DefaultEndpoint = "https://firebasedynamiclinks.googleapis.com/v1/shortLinks"
 )
+
+type DeepLinking interface {
+	GetDynamicLink(p *Payload)
+}
+
+type DeepLinker struct {
+	DeepLinking DeepLinking
+}
+
+func (d *DeepLinker) GetDynamicLink(p *Payload) {
+	d.DeepLinking.GetDynamicLink(p)
+}
 
 // Payload sets the payload.
 type Payload struct {
@@ -29,7 +41,7 @@ type AndroidInfo struct {
 	AndroidPackageName string `json:"androidPackageName"`
 }
 
-// Client is interface structure
+// FireBaseClient is interface structure
 type FireBaseClient struct {
 	Endpoint string
 	APIKey   string
@@ -55,7 +67,7 @@ type Warning struct {
 	WarningMessage string
 }
 
-// NewFireBaseClient instantiate a new Client
+// NewFireBaseClient instantiate a new Firebase Client
 func NewFireBaseClient(apiKey string) *FireBaseClient {
 	return &FireBaseClient{
 		Endpoint: DefaultEndpoint,

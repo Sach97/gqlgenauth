@@ -1,4 +1,4 @@
-package utils
+package tokenizer
 
 import (
 	"fmt"
@@ -12,12 +12,6 @@ type RedisClient struct {
 	redisdb *redis.Client
 }
 
-func (client *RedisClient) Ping() error {
-	pong, err := client.redisdb.Ping().Result()
-	fmt.Println(pong, err)
-	return err
-}
-
 func NewRedisClient() *RedisClient {
 
 	redisdb := redis.NewClient(&redis.Options{
@@ -28,6 +22,12 @@ func NewRedisClient() *RedisClient {
 	return &RedisClient{
 		redisdb: redisdb,
 	}
+}
+
+func (client *RedisClient) Ping() error {
+	pong, err := client.redisdb.Ping().Result()
+	fmt.Println(pong, err)
+	return err
 }
 
 func (client *RedisClient) GenerateString() (string, error) {
