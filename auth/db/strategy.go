@@ -13,7 +13,8 @@ type DB struct {
 	Strategy Strategy
 }
 
-func (o *DB) OpenDB(config *ctx.Config) (*sqlx.DB, error) {
-	db, err := o.Strategy.OpenDB(config)
+func (s *DB) OpenDB(config *ctx.Config) (*sqlx.DB, error) {
+	//driverName = reflect.TypeOf(s.Strategy).Name()
+	db, err := s.Strategy.OpenDB(config)
 	return db, err
 }

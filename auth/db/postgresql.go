@@ -20,9 +20,6 @@ func (p Postgres) OpenDB(config *ctx.Config) (*sqlx.DB, error) {
 	}
 
 	err = db.Ping()
-	// log.Println("Retry database connection in 5 seconds... ")
-	// time.Sleep(time.Duration(5) * time.Second)
-	// return p.OpenDB(config)
 
 	log.Println("Database is connected ")
 	return db, err

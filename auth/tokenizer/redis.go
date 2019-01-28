@@ -30,6 +30,8 @@ func (client *RedisClient) Ping() error {
 	return err
 }
 
+//TODO: rename this to GenerateToken
+
 func (client *RedisClient) GenerateString() (string, error) {
 	id, _ := uuid.NewV4()
 	exp := time.Duration(600 * time.Second) // 10 minutes

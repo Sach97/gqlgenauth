@@ -13,3 +13,4 @@
 auth/vendor/**
 
 auth/.env
+postgres/**

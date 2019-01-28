@@ -1,9 +1,9 @@
 package main
 
-import (
-	gcontext "github.com/Sach97/gqlgenauth/auth/context"
-	db "github.com/Sach97/gqlgenauth/auth/db"
-)
+// import (
+// 	gcontext "github.com/Sach97/gqlgenauth/auth/context"
+// 	db "github.com/Sach97/gqlgenauth/auth/db"
+// )
 
 func main() {
 
@@ -55,13 +55,13 @@ func main() {
 	// firebase.GetDynamicLink(&payload)
 
 	// // DB Stuffs
-	config := gcontext.LoadConfig(".")
+	// config := gcontext.LoadConfig(".")
 
-	postgres := db.Strategy(db.Postgres{})
+	// postgres := db.Strategy(db.Postgres{})
 
-	client, err := postgres.OpenDB(config)
-	if err != nil {
-		panic(err)
-	}
-	client.Ping()
+	// client, err := postgres.OpenDB(config)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
 }

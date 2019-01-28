@@ -9,12 +9,12 @@ type Tokenizer struct {
 	Strategy Strategy
 }
 
-func (o *Tokenizer) GenerateString() (string, error) {
-	str, err := o.Strategy.GenerateString()
+func (t *Tokenizer) GenerateString() (string, error) {
+	str, err := t.Strategy.GenerateString()
 	return str, err
 }
 
-func (o *Tokenizer) GetToken(key string) (string, error) {
-	str, err := o.Strategy.GetToken(key)
+func (t *Tokenizer) GetToken(key string) (string, error) {
+	str, err := t.Strategy.GetToken(key)
 	return str, err
 }

@@ -14,17 +14,17 @@ services:
   #   environment:
   #   - REDIS_URL=redis://cache
 
-  # postgres:
-  #   image : postgres
-  #   volumes:
-  #     - ./postgres/pgdata:/pgdata
-  #   environment:
-  #     POSTGRES_DB: dev
-  #     POSTGRES_USER: postgres-dev
-  #     POSTGRES_PASSWORD: s3cr3tp4ssw0rd
-  #     PGDATA: /pgdata
-  #   ports:
-  #     - 5433:5432
+  postgres:
+    image : postgres
+    volumes:
+      - ./postgres/pgdata:/pgdata
+    environment:
+      POSTGRES_DB: dev
+      POSTGRES_USER: postgres-dev
+      POSTGRES_PASSWORD: s3cr3tp4ssw0rd
+      PGDATA: /pgdata
+    ports:
+      - 5433:5432
   redis:
     image: redis
     container_name: cache

@@ -12,18 +12,6 @@ const (
 	DefaultEndpoint = "https://firebasedynamiclinks.googleapis.com/v1/shortLinks"
 )
 
-type DeepLinking interface {
-	GetDynamicLink(p *Payload)
-}
-
-type DeepLinker struct {
-	DeepLinking DeepLinking
-}
-
-func (d *DeepLinker) GetDynamicLink(p *Payload) {
-	d.DeepLinking.GetDynamicLink(p)
-}
-
 // Payload sets the payload.
 type Payload struct {
 	DynamicLinkInfo *DynamicLinkInfo `json:"dynamicLinkInfo"`
@@ -87,7 +75,6 @@ func (c *FireBaseClient) GetDynamicLink(p *Payload) {
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(payload))
 
 	// add header
-	//req.Header.Add("Authorization", fmt.Sprintf("key=%s", apiKey))
 	req.Header.Add("content-type", "application/json")
 	resp, _ := http.DefaultClient.Do(req)
 

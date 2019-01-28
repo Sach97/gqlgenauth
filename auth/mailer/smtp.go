@@ -23,8 +23,11 @@ func NewMailer(c Service) *Service {
 	}
 }
 
+//TODO: confirmation email template
+
+//SendEmail sends an email
 func (c *Service) SendEmail(from string, to []string, msg []byte) error {
-	auth := smtp.PlainAuth(c.Identity, c.Username, c.Password, c.Host) //smtp.PlainAuth("", "user@example.com", "password", "mail.example.com")
+	auth := smtp.PlainAuth(c.Identity, c.Username, c.Password, c.Host)
 
 	err := smtp.SendMail(c.Address, auth, from, to, msg)
 
