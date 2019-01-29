@@ -35,18 +35,17 @@ func (client *RedisClient) Ping() error {
 
 //TODO: rename this to GenerateToken and add userid to arguments
 
-// GenerateString generate a random string
-func (client *RedisClient) GenerateString() (string, error) {
-	id, _ := uuid.NewV4()
+// GenerateToken generate a random string
+func (client *RedisClient) GenerateToken(userID string) (string, error) {
+	id := uuid.NewV4()
 	exp := time.Duration(600 * time.Second) // 10 minutes
 
-	fmt.Printf("UUIDv4: %s\n", id)
-	err := client.redisdb.Set(id.String(), "testuserid", exp).Err()
+	err := client.redisdb.Set(id.String(), userID, exp).Err()
 	return id.String(), err
 }
 
-// GetToken token retrieves the value of the token from our storage
-func (client *RedisClient) GetToken(key string) (string, error) {
-	val, err := client.redisdb.Get(key).Result()
+// GetUserID token retrieves the value of the token from our storage
+func (client *RedisClient) GetUserID(token string) (string, error) {
+	val, err := client.redisdb.Get(token).Result()
 	return val, err
 }

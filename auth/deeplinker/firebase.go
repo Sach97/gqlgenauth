@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/Sach97/gqlgenauth/auth/context"
 )
 
 const (
-	// DefaultEndpoint contains endpoint URL of FCM service.
+	// DefaultEndpoint contains endpoint URL of firebase short link service.
 	DefaultEndpoint = "https://firebasedynamiclinks.googleapis.com/v1/shortLinks"
 )
 
@@ -20,7 +22,7 @@ type Payload struct {
 // DynamicLinkInfo sets the domain uri prefix, the link and the android info on the payload.
 type DynamicLinkInfo struct {
 	DomainURIPrefix string       `json:"domainUriPrefix"`
-	Link            string       `json:"link"`
+	Link            *string      `json:"link"`
 	AndroidInfo     *AndroidInfo `json:"androidInfo"`
 }
 
@@ -31,12 +33,16 @@ type AndroidInfo struct {
 
 // FireBaseClient is interface structure
 type FireBaseClient struct {
-	Endpoint string
-	APIKey   string
+	Endpoint              string
+	APIKey                string
+	AndroidPackageName    string
+	DomainURIPrefix       string
+	ConfirmationEndpoint  string
+	ResetPasswordEndpoint string
 }
 
-// Error400Response is the shape of a response in case of a code 400
-type Error400Response struct {
+// ErrorResponse is the shape of a response in case of a code 400
+type ErrorResponse struct {
 	Code    string
 	Message string
 	Status  string
@@ -56,16 +62,40 @@ type Warning struct {
 }
 
 // NewFireBaseClient instantiate a new Firebase Client
-func NewFireBaseClient(apiKey string) *FireBaseClient {
+func NewFireBaseClient(config *context.Config) *FireBaseClient {
+	if config.FirebaseApiKey == "" {
+		panic("You must set your API key")
+	}
+
 	return &FireBaseClient{
-		Endpoint: DefaultEndpoint,
-		APIKey:   apiKey,
+		Endpoint:              DefaultEndpoint,
+		APIKey:                config.FirebaseApiKey,
+		AndroidPackageName:    config.AndroidPackageName,
+		DomainURIPrefix:       config.DomainURIPrefix,
+		ConfirmationEndpoint:  config.ConfirmationEndpoint,
+		ResetPasswordEndpoint: config.ResetPasswordEndpoint,
 	}
 }
 
-// GetDynamicLink creates a new firebase link
-func (c *FireBaseClient) GetDynamicLink(p *Payload) {
+type Response struct {
+	SuccessResponse *SuccessResponse
+	ErrorResponse   *ErrorResponse
+}
 
+// GetDynamicLink creates a new firebase link
+func (c *FireBaseClient) GetDynamicLink(token string, confirm bool) (string, error) {
+
+	var link string
+	if confirm {
+		link = fmt.Sprintf("%s?token=%s", c.ConfirmationEndpoint, token)
+	} else {
+		link = fmt.Sprintf("%s?token=%s", c.ResetPasswordEndpoint, token)
+	}
+	androidInfo := AndroidInfo{AndroidPackageName: c.AndroidPackageName}
+	dynamicLinkInfo := DynamicLinkInfo{DomainURIPrefix: c.DomainURIPrefix, Link: &link, AndroidInfo: &androidInfo}
+
+	p := Payload{DynamicLinkInfo: &dynamicLinkInfo}
+	fmt.Println(c.APIKey)
 	payload, _ := json.Marshal(p)
 
 	//format url
@@ -80,11 +110,26 @@ func (c *FireBaseClient) GetDynamicLink(p *Payload) {
 
 	defer resp.Body.Close()
 
-	response := new(SuccessResponse)
+	// if resp.StatusCode == 200 {
+	// 	json.NewDecoder(resp.Body).Decode(successRes)
+	// 	return &Response{
+	// 		SuccessResponse: successRes,
+	// 	}
+	// }
+	// errRes := new(ErrorResponse)
+	// json.NewDecoder(resp.Body).Decode(successRes)
+	// return &Response{
+	// 	ErrorResponse: errRes,
+	// }
 
 	if resp.StatusCode == 200 {
-		json.NewDecoder(resp.Body).Decode(response)
-		fmt.Println(response.PreviewLink)
+		successRes := new(SuccessResponse)
+		json.NewDecoder(resp.Body).Decode(successRes)
+		return successRes.Shortlink, nil
+	} else {
+		errRes := new(ErrorResponse)
+		json.NewDecoder(resp.Body).Decode(errRes)
+		return "", fmt.Errorf("Code :%s, Status: %s, Message: %s", errRes.Code, errRes.Status, errRes.Message)
 	}
 
 }

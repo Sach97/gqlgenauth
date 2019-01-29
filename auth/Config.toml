@@ -1,4 +1,4 @@
-app-name = "gqlgen-starter"
+app-name = "go-user"
 version = 1.0
 
 [db]
@@ -11,3 +11,9 @@ dbname = "dev"
 [log]
 debug-mode = true
 log-format = "%{color}%{time:2006/01/02 15:04:05 -07:00 MST} [%{level:.6s}] %{shortfile} : %{color:reset}%{message}"
+
+[deeplinker]
+androidPackageName = "home.sacha.firebasetest"
+domainURIPrefix= "https://minorys.page.link"
+confirmationEndpoint ="https://ecstatic-heisenberg-ea2789.netlify.com/confirmation"
+resetPasswordEndpoint ="https://ecstatic-heisenberg-ea2789.netlify.com/reset"

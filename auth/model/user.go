@@ -6,6 +6,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+//User struct represents our User model
 type User struct {
 	ID        string
 	Email     string
@@ -17,6 +18,7 @@ type User struct {
 	//Roles     []*Role
 }
 
+//HashedPassword hash user password
 func (user *User) HashedPassword() error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -27,6 +29,7 @@ func (user *User) HashedPassword() error {
 	return nil
 }
 
+//ComparePassword compare the given password with the password in db
 func (user *User) ComparePassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {

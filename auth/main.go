@@ -1,23 +1,28 @@
 package main
 
-// import (
-// 	gcontext "github.com/Sach97/gqlgenauth/auth/context"
-// 	db "github.com/Sach97/gqlgenauth/auth/db"
-// )
+import (
+	"fmt"
+
+	"github.com/Sach97/gqlgenauth/auth/context"
+	"github.com/Sach97/gqlgenauth/auth/deeplinker"
+)
 
 func main() {
+
+	// // Context Stuffs
+	cfg := context.LoadConfig(".")
 
 	// // Token stuffs
 	// RedisClient := tokenizer.NewRedisClient()
 	// client := tokenizer.Tokenizer{RedisClient}
 
-	// token, err := client.GenerateString()
+	// token, err := client.GenerateToken("userid")
 	// fmt.Println(token)
 	// if err != nil {
 	// 	panic(err)
 	// }
 
-	// value, err := client.GetToken(token)
+	// value, err := client.GetUserID(token)
 	// if err != nil {
 	// 	panic(err)
 	// }
@@ -32,7 +37,9 @@ func main() {
 	// 	sendgrid,
 	// 	"smtp.sendgrid.net",
 	// 	"smtp.sendgrid.net:25",
-	// }
+	// }apiKey := "AIzaSyCZz285uQR6-XDAs6pdINuN8y73RO6kGf4"
+	// androidInfo := deeplinker.AndroidInfo{AndroidPackageName: "home.sacha.firebasetest"}
+	// dynamicLinkInfo := deeplinker.DynamicLinkInfo{DomainURIPrefix: "https://minorys.page.link", Link: "https://ecstatic-heisenberg-ea2789.netlify.com/confirmation", AndroidInfo: &androidInfo}
 	// client := mailer.NewMailer(cfg)
 	// to := []string{"sacha.arbonel@hotmail.fr"}
 
@@ -46,22 +53,35 @@ func main() {
 	// client.SendEmail("sacha.arbonel@hotmail.fr", to, msg)
 
 	// // Firebase stuffs
-	// apiKey := "AIzaSyCZz285uQR6-XDAs6pdINuN8y73RO6kGf4"
-	// androidInfo := deeplinker.AndroidInfo{AndroidPackageName: "home.sacha.firebasetest"}
-	// dynamicLinkInfo := deeplinker.DynamicLinkInfo{DomainURIPrefix: "https://minorys.page.link", Link: "https://ecstatic-heisenberg-ea2789.netlify.com/confirmation", AndroidInfo: &androidInfo}
 
-	// payload := deeplinker.Payload{DynamicLinkInfo: &dynamicLinkInfo}
-	// firebase := deeplinker.NewFireBaseClient(apiKey)
-	// firebase.GetDynamicLink(&payload)
+	firebase := deeplinker.NewFireBaseClient(cfg)
 
-	// // DB Stuffs
-	// config := gcontext.LoadConfig(".")
+	link, _ := firebase.GetDynamicLink("randomstring", true)
+	fmt.Println(link)
 
-	// postgres := db.Strategy(db.Postgres{})
+	// sql := db.Strategy(db.DriverSQL{Name: "postgres"})
 
-	// client, err := postgres.OpenDB(config)
+	// client, err := sql.OpenDB(config)
 	// if err != nil {
 	// 	panic(err)
 	// }
+
+	// client.
+	// userService := service.NewUserService(db, roleService, log)
+	// ctx := context.Background()
+
+	//Signup(email,password) mutation
+	//create user
+	//send email confirmation
+
+	//ConfirmUser(token) query
+	//Get userid from token
+	// Verify if user exists from userid
+	//sets user as confirmed in database from userid
+	//send boolean isConfirmed
+
+	//Login(user,password) -> AuthToken mutation
+	//flutter side => save authtoken is shared preference or secure storage
+	//add to header for next requests
 
 }

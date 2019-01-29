@@ -1,11 +1,13 @@
-package service
+package user
 
 import (
 	"database/sql"
 	"errors"
 
-	"github.com/OscarYuen/go-graphql-starter/model"
+	"github.com/Sach97/gqlgenauth/auth/model"
 	"github.com/Sach97/gqlgenauth/auth/tokenizer"
+	"github.com/Sach97/gqlgenauth/auth/deeplinker"
+	"github.com/Sach97/gqlgenauth/auth/mailer"
 	"github.com/jmoiron/sqlx"
 	"github.com/rs/xid"
 )
@@ -41,12 +43,15 @@ func (u *UserService) CreateUser(user *model.User) (*model.User, error) {
 }
 
 // SendEmail sends an email with a confirmation link to a new user
-// func (u *UserService) SendEmail(userID string) (*model.User, error) {
-//	token := GenerateToken(userID)
-// payload := 
-// 	u.deeplinker.GetDynamicLink(payload)
-// 	u.mailer.SendConfirmationEmail(GenerateDynamicLink())
-// }
+func (u *UserService) SendConfirmationEmail(user *model.User, p *tokenizer.Payload) error {
+	token,err := u.tokenizer.GenerateToken(user.ID)
+	if err != nil {
+		return err
+	}
+	
+	u.deeplinker.GetDynamicLink(p)
+	u.mailer.SendConfirmationEmail()
+}
 
 // ConfirmUser is a service that sets a confirmed user
 func (u *UserService) ConfirmUser(userID string) (bool, error) {
@@ -86,6 +91,25 @@ func (u *UserService) FindByEmail(email string) (*model.User, error) {
 	}
 
 	return user, nil
+}
+
+// UserExists returns true if user exists
+func (u *UserService) UserExists(userID string) bool {
+	user := &model.User{}
+
+	userSQL := `SELECT * FROM users WHERE ID = $1`
+	udb := u.db.Unsafe()
+	row := udb.QueryRowx(userSQL, userID)
+	err := row.StructScan(user)
+	if err == sql.ErrNoRows {
+		return false
+	}
+	if err != nil {
+		u.log.Errorf("Error in retrieving user : %v", err)
+		return false
+	}
+
+	return true
 }
 
 
