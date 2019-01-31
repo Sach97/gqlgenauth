@@ -1,6 +1,9 @@
 package mailer
 
 import (
+	"bytes"
+	"fmt"
+	"html/template"
 	"log"
 	"net/smtp"
 
@@ -61,8 +64,6 @@ func NewMailer(config *context.Config) *Service {
 	}
 }
 
-//TODO: confirmation email template
-
 //SendEmail sends an email
 func (s *Service) SendEmail(message Message) error {
 	auth := smtp.PlainAuth(s.Identity, s.Username, s.Password, s.Host)
@@ -73,7 +74,18 @@ func (s *Service) SendEmail(message Message) error {
 	return err
 }
 
-// func (c *Service) SendConfirmationEmail(from string, to []string, msg []byte) error {
-// 	SendEmail
-// 	return err
-// }
+//TODO: move this to mailer services in services or config mechanism
+
+//SendEmailTemplate sends a templated email
+func (s *Service) SendEmailTemplate(inputs Inputs, emailType string, data interface{}) error {
+
+	t := template.Must(template.ParseFiles(fmt.Sprintf("%s.html", emailType)))
+
+	var buff bytes.Buffer
+	t.Execute(&buff, data)
+	body := buff.String()
+	inputs.Body = body
+	msg := s.NewMessage(inputs)
+	err := s.SendEmail(msg)
+	return err
+}

@@ -1,9 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"html/template"
-
 	"github.com/Sach97/gqlgenauth/auth/context"
 	"github.com/Sach97/gqlgenauth/auth/mailer"
 )
@@ -35,15 +32,9 @@ func main() {
 
 	// // Mail stuffs
 
-	t := template.Must(template.ParseFiles("confirmation.html"))
 	p := EmailMessage{
 		ConfirmationUrl: "https://ecstatic-heisenberg-ea2789.netlify.com/confirmation",
 	}
-	var buff bytes.Buffer
-	t.Execute(&buff, p)
-	body := buff.String()
-	//fmt.Println(body)
-
 	client := mailer.NewMailer(cfg)
 	to := []string{"sacha.arbonel@hotmail.fr"}
 	recipients := "recipient@example.ne"
@@ -52,12 +43,11 @@ func main() {
 	inputs := mailer.Inputs{
 		Recipients: recipients,
 		Subject:    subject,
-		Body:       body,
 		Sender:     sender,
 		To:         to,
 	}
-	msg := client.NewMessage(inputs)
-	client.SendEmail(msg)
+
+	client.SendEmailTemplate(inputs, "confirmation", p)
 
 	// // Firebase STUFFS
 
