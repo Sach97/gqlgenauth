@@ -44,6 +44,10 @@ func (c *Service) SendEmail(from string, to []string, msg []byte) error { //Send
 	return err
 }
 
+// func (c *Service) SendEmailTemplate(from string, to []string, data []byte, emailType string) error {
+
+// }
+
 // func (c *Service) SendConfirmationEmail(from string, to []string, msg []byte) error {
 // 	SendEmail
 // 	return err

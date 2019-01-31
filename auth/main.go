@@ -1,9 +1,38 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/Sach97/gqlgenauth/auth/context"
 	"github.com/Sach97/gqlgenauth/auth/mailer"
 )
+
+type Inputs struct {
+	Recipients string
+	Subject    string
+	Body       string
+}
+
+// func NewMessage(inputs Inputs)[]byte{
+// 	msg := []byte(fmt.Sprintf("To: %s\r\n", recipients) +
+
+// 		fmt.Sprintf("Subject: %s\r\n", subject) +
+
+// 		"\r\n" +
+
+// 		fmt.Sprintf("%s\r\n", body))
+// }
+
+func NewMessage(inputs Inputs) []byte {
+	msg := []byte(fmt.Sprintf("To: %s\r\n", inputs.Recipients) +
+
+		fmt.Sprintf("Subject: %s\r\n", inputs.Subject) +
+
+		"\r\n" +
+
+		fmt.Sprintf("%s\r\n", inputs.Body))
+	return msg
+}
 
 func main() {
 
@@ -30,14 +59,16 @@ func main() {
 
 	client := mailer.NewMailer(cfg)
 	to := []string{"sacha.arbonel@hotmail.fr"}
+	recipients := "recipient@example.ne"
+	subject := "testing with func NewMsg!"
+	body := "This is the email body from newmsg"
 
-	msg := []byte("To: recipient@example.net\r\n" +
-
-		"Subject: testing with get env!\r\n" +
-
-		"\r\n" +
-
-		"This is the email body.\r\n")
+	inputs := Inputs{
+		Recipients: recipients,
+		Subject:    subject,
+		Body:       body,
+	}
+	msg := NewMessage(inputs)
 	client.SendEmail("sacha.arbonel@hotmail.fr", to, msg)
 
 	// // Firebase STUFFS

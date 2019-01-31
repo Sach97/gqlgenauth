@@ -3,13 +3,14 @@ package user
 import (
 	"database/sql"
 	"errors"
-
+	"html/template"
 	"github.com/Sach97/gqlgenauth/auth/model"
 	"github.com/Sach97/gqlgenauth/auth/tokenizer"
 	"github.com/Sach97/gqlgenauth/auth/deeplinker"
 	"github.com/Sach97/gqlgenauth/auth/mailer"
 	"github.com/jmoiron/sqlx"
 	"github.com/rs/xid"
+
 )
 
 
@@ -18,7 +19,7 @@ type UserService struct {
 	db        *sqlx.DB
 	log       *logging.Logger
 	tokenizer *tokenizer.Tokenizer
-	mailer *mailer.Mailer
+	mailer *mailer.Service
 	deeplinker *deeplinker.FireBaseClient
 }
 
@@ -50,7 +51,8 @@ func (u *UserService) SendConfirmationEmail(user *model.User, p *tokenizer.Paylo
 	}
 	
 	link, _ := u.deeplinker.GetDynamicLink(token, true)
-	u.mailer.SendConfirmationEmail("Activate your account by clicking on this link",user.Email)
+	email := []string{user.Email}
+	u.mailer.SendEmailTemplate("confirmation",email,nil)
 }
 
 // ConfirmUser is a service that sets a confirmed user
@@ -71,6 +73,7 @@ func (u *UserService) ConfirmUser(userID string) (bool, error) {
 	return user, nil
 
 }
+
 
 // FindByEmail find a user by email
 func (u *UserService) FindByEmail(email string) (*model.User, error) {

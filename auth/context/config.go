@@ -31,6 +31,9 @@ type Config struct {
 	DomainURIPrefix       string
 	ConfirmationEndpoint  string
 	ResetPasswordEndpoint string
+
+	//UserService
+	ConfirmationEmailTemplate  string
 }
 
 //LoadConfig load the config from path

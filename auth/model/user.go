@@ -9,6 +9,7 @@ import (
 //User struct represents our User model
 type User struct {
 	ID        string
+	Username  string
 	Email     string
 	Password  string
 	CreatedAt string `db:"created_at"`

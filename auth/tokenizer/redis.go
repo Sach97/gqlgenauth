@@ -33,8 +33,6 @@ func (client *RedisClient) Ping() error {
 	return err
 }
 
-//TODO: rename this to GenerateToken and add userid to arguments
-
 // GenerateToken generate a random string
 func (client *RedisClient) GenerateToken(userID string) (string, error) {
 	id := uuid.NewV4()
