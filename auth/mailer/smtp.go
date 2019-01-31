@@ -67,8 +67,8 @@ func NewMailer(config *context.Config) *Service {
 
 //SendEmail sends an email
 func (s *Service) SendEmail(message Message) error {
-	auth := smtp.PlainAuth(c.Identity, c.Username, c.Password, c.Host)
-	err := smtp.SendMail(c.Address, auth, message.Sender, message.To, message.Msg)
+	auth := smtp.PlainAuth(s.Identity, s.Username, s.Password, s.Host)
+	err := smtp.SendMail(s.Address, auth, message.Sender, message.To, message.Msg)
 	if err != nil {
 		log.Fatal(err)
 	}
