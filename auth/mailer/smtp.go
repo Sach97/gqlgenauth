@@ -1,11 +1,14 @@
 package mailer
 
 import (
-	"fmt"
 	"log"
 	"net/smtp"
 
 	"github.com/Sach97/gqlgenauth/auth/context"
+)
+
+const (
+	MIME = "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 )
 
 //Service holds our service struct
@@ -35,13 +38,8 @@ type Message struct {
 
 //NewMessage carefully craft a new message from inputs struct
 func (s *Service) NewMessage(inputs Inputs) Message {
-	msg := []byte(fmt.Sprintf("To: %s\r\n", inputs.Recipients) +
-
-		fmt.Sprintf("Subject: %s\r\n", inputs.Subject) +
-
-		"\r\n" +
-
-		fmt.Sprintf("%s\r\n", inputs.Body))
+	body := "To: " + inputs.To[0] + "\r\nSubject: " + inputs.Subject + "\r\n" + MIME + "\r\n" + inputs.Body
+	msg := []byte(body)
 	return Message{
 		Msg:    msg,
 		To:     inputs.To,
