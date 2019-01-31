@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/Sach97/gqlgenauth/auth/context"
-	"github.com/Sach97/gqlgenauth/auth/deeplinker"
+	"github.com/Sach97/gqlgenauth/auth/mailer"
 )
 
 func main() {
@@ -29,35 +27,27 @@ func main() {
 	// fmt.Println(value)
 
 	// // Mail stuffs
-	// sendgrid := os.Getenv("SENDGRID")
-	// fmt.Println(sendgrid)
-	// cfg := mailer.Service{
-	// 	"",
-	// 	"apikey",
-	// 	sendgrid,
-	// 	"smtp.sendgrid.net",
-	// 	"smtp.sendgrid.net:25",
-	// }apiKey := "AIzaSyCZz285uQR6-XDAs6pdINuN8y73RO6kGf4"
-	// androidInfo := deeplinker.AndroidInfo{AndroidPackageName: "home.sacha.firebasetest"}
-	// dynamicLinkInfo := deeplinker.DynamicLinkInfo{DomainURIPrefix: "https://minorys.page.link", Link: "https://ecstatic-heisenberg-ea2789.netlify.com/confirmation", AndroidInfo: &androidInfo}
-	// client := mailer.NewMailer(cfg)
-	// to := []string{"sacha.arbonel@hotmail.fr"}
 
-	// msg := []byte("To: recipient@example.net\r\n" +
+	client := mailer.NewMailer(cfg)
+	to := []string{"sacha.arbonel@hotmail.fr"}
 
-	// 	"Subject: testing with get env!\r\n" +
+	msg := []byte("To: recipient@example.net\r\n" +
 
-	// 	"\r\n" +
+		"Subject: testing with get env!\r\n" +
 
-	// 	"This is the email body.\r\n")
-	// client.SendEmail("sacha.arbonel@hotmail.fr", to, msg)
+		"\r\n" +
 
-	// // Firebase stuffs
+		"This is the email body.\r\n")
+	client.SendEmail("sacha.arbonel@hotmail.fr", to, msg)
 
-	firebase := deeplinker.NewFireBaseClient(cfg)
+	// // Firebase STUFFS
 
-	link, _ := firebase.GetDynamicLink("randomstring", true)
-	fmt.Println(link)
+	// firebase := deeplinker.NewFireBaseClient(cfg)
+
+	// link, _ := firebase.GetDynamicLink("randomstring", true)
+	// fmt.Println(link)
+
+	//DB STUFFS
 
 	// sql := db.Strategy(db.DriverSQL{Name: "postgres"})
 

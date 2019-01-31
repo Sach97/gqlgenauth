@@ -11,14 +11,22 @@ import (
 type Config struct {
 	AppName string
 
-	//DB config
+	//SMTP
+	SMTPIdentity string
+	SMTPUsername string
+	SMTPPassword string
+	SMTPHost     string
+	SMTPAddress  string
+
+	//DB
 	DBHost     string
 	DBPort     string
 	DBUser     string
 	DBPassword string
 	DBName     string
 
-	FirebaseApiKey        string
+	//Firebase
+	FirebaseAPIKey        string
 	AndroidPackageName    string
 	DomainURIPrefix       string
 	ConfirmationEndpoint  string
@@ -38,13 +46,22 @@ func LoadConfig(path string) *Config {
 	return &Config{
 		AppName: config.Get("app-name").(string),
 
+		//SMTP
+		SMTPIdentity: config.Get("smtp.identity").(string),
+		SMTPUsername: config.Get("smtp.username").(string),
+		SMTPPassword: os.Getenv("SMTPPASSWORD"),
+		SMTPHost:     config.Get("smtp.host").(string),
+		SMTPAddress:  config.Get("smtp.address").(string),
+
+		//DB
 		DBHost:     config.Get("db.host").(string),
 		DBPort:     config.Get("db.port").(string),
 		DBUser:     config.Get("db.user").(string),
 		DBPassword: config.Get("db.password").(string),
 		DBName:     config.Get("db.dbname").(string),
 
-		FirebaseApiKey:        os.Getenv("FIREBASE"),
+		//Firebase
+		FirebaseAPIKey:        os.Getenv("FIREBASE"),
 		AndroidPackageName:    config.Get("deeplinker.androidPackageName").(string),
 		DomainURIPrefix:       config.Get("deeplinker.domainURIPrefix").(string),
 		ConfirmationEndpoint:  config.Get("deeplinker.confirmationEndpoint").(string),

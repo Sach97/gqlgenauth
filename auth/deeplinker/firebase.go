@@ -69,7 +69,7 @@ func NewFireBaseClient(config *context.Config) *FireBaseClient {
 
 	return &FireBaseClient{
 		Endpoint:              DefaultEndpoint,
-		APIKey:                config.FirebaseApiKey,
+		APIKey:                config.FirebaseAPIKey,
 		AndroidPackageName:    config.AndroidPackageName,
 		DomainURIPrefix:       config.DomainURIPrefix,
 		ConfirmationEndpoint:  config.ConfirmationEndpoint,

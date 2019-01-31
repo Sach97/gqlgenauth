@@ -3,8 +3,11 @@ package mailer
 import (
 	"log"
 	"net/smtp"
+
+	"github.com/Sach97/gqlgenauth/auth/context"
 )
 
+//Service holds our service struct
 type Service struct {
 	Identity string
 	Username string
@@ -13,15 +16,17 @@ type Service struct {
 	Address  string
 }
 
-//TODO: retrieve values from config
-
-func NewMailer(c Service) *Service {
+//NewMailer instantiates the mailer service from config file
+func NewMailer(config *context.Config) *Service {
+	if config.SMTPPassword == "" {
+		panic("You must set your smtp password")
+	}
 	return &Service{
-		Identity: c.Identity,
-		Username: c.Username,
-		Password: c.Password,
-		Host:     c.Host,
-		Address:  c.Address,
+		Identity: config.SMTPIdentity,
+		Username: config.SMTPUsername,
+		Password: config.SMTPPassword,
+		Host:     config.SMTPHost,
+		Address:  config.SMTPAddress,
 	}
 }
 
@@ -40,6 +45,6 @@ func (c *Service) SendEmail(from string, to []string, msg []byte) error { //Send
 }
 
 // func (c *Service) SendConfirmationEmail(from string, to []string, msg []byte) error {
-// 	SendEmail()
+// 	SendEmail
 // 	return err
 // }

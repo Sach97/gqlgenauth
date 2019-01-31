@@ -17,3 +17,9 @@ androidPackageName = "home.sacha.firebasetest"
 domainURIPrefix= "https://minorys.page.link"
 confirmationEndpoint ="https://ecstatic-heisenberg-ea2789.netlify.com/confirmation"
 resetPasswordEndpoint ="https://ecstatic-heisenberg-ea2789.netlify.com/reset"
+
+[smtp]
+identity = ""
+username = "apikey"
+host="smtp.sendgrid.net"
+address="smtp.sendgrid.net:25"

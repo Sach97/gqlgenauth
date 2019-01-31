@@ -19,7 +19,7 @@ type UserService struct {
 	log       *logging.Logger
 	tokenizer *tokenizer.Tokenizer
 	mailer *mailer.Mailer
-	deeplinker *deeplinker.Deeplinker
+	deeplinker *deeplinker.FireBaseClient
 }
 
 // NewUserService instantiates user service
@@ -49,8 +49,8 @@ func (u *UserService) SendConfirmationEmail(user *model.User, p *tokenizer.Paylo
 		return err
 	}
 	
-	u.deeplinker.GetDynamicLink(p)
-	u.mailer.SendConfirmationEmail()
+	link, _ := u.deeplinker.GetDynamicLink(token, true)
+	u.mailer.SendConfirmationEmail("Activate your account by clicking on this link",user.Email)
 }
 
 // ConfirmUser is a service that sets a confirmed user
@@ -71,8 +71,6 @@ func (u *UserService) ConfirmUser(userID string) (bool, error) {
 	return user, nil
 
 }
-
-// TODO: user exists
 
 // FindByEmail find a user by email
 func (u *UserService) FindByEmail(email string) (*model.User, error) {
