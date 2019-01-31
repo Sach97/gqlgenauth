@@ -1,6 +1,7 @@
 package mailer
 
 import (
+	"fmt"
 	"log"
 	"net/smtp"
 
@@ -14,6 +15,38 @@ type Service struct {
 	Password string
 	Host     string
 	Address  string
+}
+
+//Inputs holds our inputs struct
+type Inputs struct {
+	Recipients string
+	Subject    string
+	Body       string
+	Sender     string
+	To         []string
+}
+
+//Message holds our message struct
+type Message struct {
+	Msg    []byte
+	Sender string
+	To     []string
+}
+
+//NewMessage carefully craft a new message from inputs struct
+func (s *Service) NewMessage(inputs Inputs) Message {
+	msg := []byte(fmt.Sprintf("To: %s\r\n", inputs.Recipients) +
+
+		fmt.Sprintf("Subject: %s\r\n", inputs.Subject) +
+
+		"\r\n" +
+
+		fmt.Sprintf("%s\r\n", inputs.Body))
+	return Message{
+		Msg:    msg,
+		To:     inputs.To,
+		Sender: inputs.Sender,
+	}
 }
 
 //NewMailer instantiates the mailer service from config file
@@ -32,21 +65,15 @@ func NewMailer(config *context.Config) *Service {
 
 //TODO: confirmation email template
 
-//TODO: SendEmail(input) for mirroring aws SES API https://github.com/awsdocs/aws-doc-sdk-examples/blob/7a81218bd33bd74e7364561b9df66814df876cdb/go/example_code/ses/ses_send_email.go#L107
-
 //SendEmail sends an email
-func (c *Service) SendEmail(from string, to []string, msg []byte) error { //SendEmail(to []string, template string)
+func (s *Service) SendEmail(message Message) error {
 	auth := smtp.PlainAuth(c.Identity, c.Username, c.Password, c.Host)
-	err := smtp.SendMail(c.Address, auth, from, to, msg)
+	err := smtp.SendMail(c.Address, auth, message.Sender, message.To, message.Msg)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return err
 }
-
-// func (c *Service) SendEmailTemplate(from string, to []string, data []byte, emailType string) error {
-
-// }
 
 // func (c *Service) SendConfirmationEmail(from string, to []string, msg []byte) error {
 // 	SendEmail
