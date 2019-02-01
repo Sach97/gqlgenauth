@@ -77,6 +77,7 @@ func NewFireBaseClient(config *context.Config) *FireBaseClient {
 	}
 }
 
+//Response holds the different response types
 type Response struct {
 	SuccessResponse *SuccessResponse
 	ErrorResponse   *ErrorResponse
@@ -109,26 +110,13 @@ func (c *FireBaseClient) GetDynamicLink(token string, confirm bool) (string, err
 
 	defer resp.Body.Close()
 
-	// if resp.StatusCode == 200 {
-	// 	json.NewDecoder(resp.Body).Decode(successRes)
-	// 	return &Response{
-	// 		SuccessResponse: successRes,
-	// 	}
-	// }
-	// errRes := new(ErrorResponse)
-	// json.NewDecoder(resp.Body).Decode(successRes)
-	// return &Response{
-	// 	ErrorResponse: errRes,
-	// }
-
 	if resp.StatusCode == 200 {
 		successRes := new(SuccessResponse)
 		json.NewDecoder(resp.Body).Decode(successRes)
 		return successRes.Shortlink, nil
-	} else {
-		errRes := new(ErrorResponse)
-		json.NewDecoder(resp.Body).Decode(errRes)
-		return "", fmt.Errorf("Code :%s, Status: %s, Message: %s", errRes.Code, errRes.Status, errRes.Message)
 	}
+	errRes := new(ErrorResponse)
+	json.NewDecoder(resp.Body).Decode(errRes)
+	return "", fmt.Errorf("Code :%s, Status: %s, Message: %s", errRes.Code, errRes.Status, errRes.Message)
 
 }

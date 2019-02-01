@@ -39,15 +39,15 @@ func main() {
 		panic(err)
 	}
 
-	//Signup(email,password) mutation
+	//Signup(email,password) mutation done
 	//create user done
 	//send email confirmation done
 
 	//ConfirmUser(token) query
-	//Get userid from token
-	// Verify if user exists from userid
-	//sets user as confirmed in database from userid
-	//send boolean isConfirmed
+	//Get userid from token done
+	// Verify if user exists from userid done
+	//sets user as confirmed in database from userid done
+	//send boolean isConfirmed done
 
 	//Login(user,password) -> AuthToken mutation
 	//flutter side => save authtoken is shared preference or secure storage
@@ -71,11 +71,12 @@ func main() {
 	// fmt.Println(user.ID)
 	// u.SendConfirmationEmail(user)
 
-	token := "22ab6e4d-143d-4941-a0cc-805df3748270"
-	verified, err := u.VerifyToken(token)
+	token := "e51ea03b-4eea-4db8-b81e-81365d4350e0"
+	verified, err := u.VerifyUserToken(token)
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println(verified)
+	
 
 }

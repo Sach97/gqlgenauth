@@ -3,6 +3,7 @@ package user
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/Sach97/gqlgenauth/auth/context"
 	"github.com/Sach97/gqlgenauth/auth/deeplinker"
@@ -81,13 +82,16 @@ func (u *UserService) SendConfirmationEmail(user *model.User) error {
 // Verify if user exists from userid
 //send boolean isConfirmed
 
-func (u *UserService) VerifyToken(token string) (bool, error) {
+func (u *UserService) VerifyUserToken(token string) (bool, error) {
 	userID, err := u.tokenizer.GetUserID(token)
 	if err != nil {
 		u.log.Errorf("Error in retrieving userid : %v", err)
 		return false, err
 	}
-
+	userExists := u.UserExists(userID)
+	if !userExists {
+		return false, fmt.Errorf("This user doesnt exists")
+	}
 	return u.ConfirmUser(userID)
 
 }
@@ -104,7 +108,7 @@ func (u *UserService) ConfirmUser(userID string) (bool, error) {
 		return user.Confirmed, nil
 	}
 	if err != nil {
-		u.log.Errorf("Error in retrieving user : %v", err)
+		u.log.Errorf("Error in updating user : %v", err)
 		return user.Confirmed, err
 	}
 	return user.Confirmed, nil
