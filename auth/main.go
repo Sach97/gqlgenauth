@@ -45,6 +45,9 @@ func main() {
 	//sets user as confirmed in database from userid done
 	//send boolean isConfirmed done
 
+	//create jwt token done
+	//verify middleware chi
+
 	//Login(user,password) -> AuthToken mutation
 	//flutter side => save authtoken is shared preference or secure storage
 	//add to header for next requests

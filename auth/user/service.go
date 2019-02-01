@@ -65,7 +65,7 @@ func (u *UserService) SendConfirmationEmail(user *model.User) error {
 	to := []string{user.Email}
 	recipients := ""
 	subject := "Confirmation email"
-	sender := "sacha.arbonel@hotmail.fr"
+	sender := user.Email
 	inputs := mailer.Inputs{
 		Recipients: recipients,
 		Subject:    subject,
