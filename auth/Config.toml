@@ -8,6 +8,13 @@ user = "postgres-dev"
 password = "s3cr3tp4ssw0rd"
 dbname = "dev"
 
+
+[auth]
+#jwt sign secret
+jwt-secret = "1234"
+#jwt expired time in second
+jwt-expire-in = "40000s"
+
 [log]
 debug-mode = true
 log-format = "%{color}%{time:2006/01/02 15:04:05 -07:00 MST} [%{level:.6s}] %{shortfile} : %{color:reset}%{message}"

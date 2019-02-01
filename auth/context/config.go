@@ -3,6 +3,7 @@ package context
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -10,6 +11,10 @@ import (
 //Config holds our config structure
 type Config struct {
 	AppName string
+
+	//JWT
+	JWTSecret   string
+	JWTExpireIn time.Duration
 
 	//SMTP
 	SMTPIdentity string
@@ -51,6 +56,11 @@ func LoadConfig(path string) *Config {
 
 	return &Config{
 		AppName: config.Get("app-name").(string),
+
+		//JWT
+
+		JWTSecret:   config.Get("auth.jwt-secret").(string),
+		JWTExpireIn: config.GetDuration("auth.jwt-expire-in"),
 
 		//SMTP
 		SMTPIdentity: config.Get("smtp.identity").(string),
