@@ -16,7 +16,7 @@ type User struct {
 	Confirmed bool
 	// EmailConfirmedAt string `db:"email_confirmed_at"`
 	// EmailSentAt string `db:"email_confirmed_at"`
-	//Roles     []*Role
+	Roles []*Role
 }
 
 //HashedPassword hash user password

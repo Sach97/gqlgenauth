@@ -25,6 +25,10 @@ domainURIPrefix= "https://minorys.page.link"
 confirmationEndpoint ="https://ecstatic-heisenberg-ea2789.netlify.com/confirmation"
 resetPasswordEndpoint ="https://ecstatic-heisenberg-ea2789.netlify.com/reset"
 
+[tokenizer]
+redis-url="localhost:6379"
+password=""
+
 [smtp]
 identity = ""
 username = "apikey"

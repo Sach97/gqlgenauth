@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Sach97/gqlgenauth/auth/context"
 	"github.com/go-redis/redis"
 	uuid "github.com/satori/go.uuid"
 )
@@ -14,12 +15,12 @@ type RedisClient struct {
 }
 
 //NewRedisClient creates a new redis connexion
-func NewRedisClient() *RedisClient {
+func NewRedisClient(config *context.Config) *RedisClient {
 
 	redisdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379", // use default Addr
-		Password: "",               // no password set
-		DB:       0,                // use default DB
+		Addr:     config.RedisURL,      // use default Addr
+		Password: config.RedisPassword, // no password set
+		DB:       0,                    // use default DB
 	})
 	return &RedisClient{
 		redisdb: redisdb,

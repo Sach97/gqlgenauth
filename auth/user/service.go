@@ -2,11 +2,13 @@ package user
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"errors"
 	"fmt"
 
 	"github.com/Sach97/gqlgenauth/auth/context"
 	"github.com/Sach97/gqlgenauth/auth/deeplinker"
+	"github.com/Sach97/gqlgenauth/auth/jwt"
 	"github.com/Sach97/gqlgenauth/auth/mailer"
 	"github.com/Sach97/gqlgenauth/auth/model"
 	"github.com/Sach97/gqlgenauth/auth/tokenizer"
@@ -15,6 +17,22 @@ import (
 	"github.com/rs/xid"
 )
 
+type CustomNamespace struct {
+	Sub                    string                 `json:"sub"`
+	Name                   string                 `json:"name"`
+	Admin                  bool                   `json:"admin"`
+	Iat                    int64                  `json:"iat"`
+	HTTPSHasuraIoJwtClaims HTTPSHasuraIoJwtClaims `json:"https://hasura.io/jwt/claims"`
+}
+
+type HTTPSHasuraIoJwtClaims struct {
+	XHasuraAllowedRoles []string `json:"x-hasura-allowed-roles"`
+	XHasuraDefaultRole  string   `json:"x-hasura-default-role"`
+	XHasuraUserID       string   `json:"x-hasura-user-id"`
+	XHasuraOrgID        string   `json:"x-hasura-org-id"`
+	XHasuraCustom       string   `json:"x-hasura-custom"`
+}
+
 //Service holds the user service struct
 type Service struct {
 	db         *sqlx.DB
@@ -22,6 +40,7 @@ type Service struct {
 	tokenizer  *tokenizer.Tokenizer
 	mailer     *mailer.Service
 	deeplinker *deeplinker.FireBaseClient
+	jwt        *jwt.AuthService
 }
 
 //EmailMessage holds our email struct
@@ -30,13 +49,13 @@ type EmailMessage struct {
 }
 
 // NewUserService instantiates user service
-func NewUserService(db *sqlx.DB, log *logging.Logger, tokenizer *tokenizer.Tokenizer, mailer *mailer.Service,
+func NewUserService(db *sqlx.DB, log *logging.Logger, jwt *jwt.AuthService, tokenizer *tokenizer.Tokenizer, mailer *mailer.Service,
 	deeplinker *deeplinker.FireBaseClient) *Service {
-	return &Service{db: db, log: log, tokenizer: tokenizer, mailer: mailer, deeplinker: deeplinker}
+	return &Service{db: db, log: log, jwt: jwt, tokenizer: tokenizer, mailer: mailer, deeplinker: deeplinker}
 }
 
 // CreateUser creates a new user
-func (u *UserService) CreateUser(user *model.User) (*model.User, error) {
+func (u *Service) CreateUser(user *model.User) (*model.User, error) {
 	userID := xid.New()
 	user.ID = userID.String()
 	userSQL := `INSERT INTO users (id, email, password,confirmed) VALUES (:id, :email, :password, :confirmed)`
@@ -49,8 +68,33 @@ func (u *UserService) CreateUser(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
+// func (u *Service) Login(user *model.User)  {
+// if password match user exists and is confirmed signjwt and return token
+// }
+
+func (u *Service) SignJwt(user *model.User) (string, error) { //TODO cleaner way to do this
+	customMap := CustomNamespace{
+		Sub:   base64.StdEncoding.EncodeToString([]byte(user.ID)),
+		Name:  base64.StdEncoding.EncodeToString([]byte(user.Username)),
+		Admin: true,
+		//Iat:   time.Now().Add(time.Second * *time.Duration(cfg.JWTExpireIn)).Unix(),
+		HTTPSHasuraIoJwtClaims: HTTPSHasuraIoJwtClaims{
+			XHasuraAllowedRoles: []string{"user", "editor"},
+			XHasuraDefaultRole:  "user",
+			XHasuraOrgID:        base64.StdEncoding.EncodeToString([]byte(user.ID)),
+			XHasuraCustom:       "custom-value",
+		},
+	}
+
+	//TODO: if user if user is confirmed sign token
+	tokenb, err := u.jwt.SignJWT(customMap)
+	t := []byte(*tokenb)
+	token := string(t)
+	return token, err
+}
+
 // SendConfirmationEmail sends an email with a confirmation link to a new user
-func (u *UserService) SendConfirmationEmail(user *model.User) error {
+func (u *Service) SendConfirmationEmail(user *model.User) error {
 	token, err := u.tokenizer.GenerateToken(user.ID)
 	if err != nil {
 		return err
@@ -84,7 +128,7 @@ func (u *UserService) SendConfirmationEmail(user *model.User) error {
 //send boolean isConfirmed
 
 //VerifyUserToken decode userid from token and verify if exists
-func (u *UserService) VerifyUserToken(token string) (bool, error) {
+func (u *Service) VerifyUserToken(token string) (bool, error) {
 	userID, err := u.tokenizer.GetUserID(token)
 	if err != nil {
 		u.log.Errorf("Error in retrieving userid : %v", err)
@@ -99,7 +143,7 @@ func (u *UserService) VerifyUserToken(token string) (bool, error) {
 }
 
 // ConfirmUser is a service that sets a confirmed user
-func (u *UserService) ConfirmUser(userID string) (bool, error) {
+func (u *Service) ConfirmUser(userID string) (bool, error) {
 	user := &model.User{}
 	updateUserSQL := `UPDATE users SET confirmed = TRUE WHERE id = $1 RETURNING confirmed;`
 
@@ -118,7 +162,7 @@ func (u *UserService) ConfirmUser(userID string) (bool, error) {
 }
 
 // FindByEmail find a user by email
-func (u *UserService) FindByEmail(email string) (*model.User, error) {
+func (u *Service) FindByEmail(email string) (*model.User, error) {
 	user := &model.User{}
 
 	userSQL := `SELECT * FROM users WHERE email = $1`
@@ -137,7 +181,7 @@ func (u *UserService) FindByEmail(email string) (*model.User, error) {
 }
 
 // UserExists returns true if user exists
-func (u *UserService) UserExists(userID string) bool {
+func (u *Service) UserExists(userID string) bool {
 	user := &model.User{}
 
 	userSQL := `SELECT * FROM users WHERE ID = $1`
@@ -156,7 +200,7 @@ func (u *UserService) UserExists(userID string) bool {
 }
 
 //ComparePassword compares two passwords
-func (u *UserService) ComparePassword(userCredentials *model.UserCredentials) (*model.User, error) {
+func (u *Service) ComparePassword(userCredentials *model.UserCredentials) (*model.User, error) {
 	user, err := u.FindByEmail(userCredentials.Email)
 	if err != nil {
 		return nil, errors.New(context.UnauthorizedAccess)

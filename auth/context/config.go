@@ -12,6 +12,10 @@ import (
 type Config struct {
 	AppName string
 
+	//Redis
+	RedisURL      string
+	RedisPassword string
+
 	//JWT
 	JWTSecret   string
 	JWTExpireIn time.Duration
@@ -57,8 +61,10 @@ func LoadConfig(path string) *Config {
 	return &Config{
 		AppName: config.Get("app-name").(string),
 
+		//Tokenizer
+		RedisURL:      config.Get("tokenizer.redis-url").(string),
+		RedisPassword: config.Get("tokenizer.password").(string),
 		//JWT
-
 		JWTSecret:   config.Get("auth.jwt-secret").(string),
 		JWTExpireIn: config.GetDuration("auth.jwt-expire-in"),
 
