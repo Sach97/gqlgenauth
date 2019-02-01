@@ -75,20 +75,37 @@ func (u *UserService) SendConfirmationEmail(user *model.User) error {
 	return u.mailer.SendEmailTemplate(inputs, "confirmation", message)
 }
 
+//TODO: handler when email already exists in database (pq: duplicate key value violates unique constraint "users_email_key")
+
+//Get userid from token
+// Verify if user exists from userid
+//send boolean isConfirmed
+
+func (u *UserService) VerifyToken(token string) (bool, error) {
+	userID, err := u.tokenizer.GetUserID(token)
+	if err != nil {
+		u.log.Errorf("Error in retrieving userid : %v", err)
+		return false, err
+	}
+
+	return u.ConfirmUser(userID)
+
+}
+
 // ConfirmUser is a service that sets a confirmed user
 func (u *UserService) ConfirmUser(userID string) (bool, error) {
 	user := &model.User{}
-	updateUserSQL := `UPDATE users SET confirmed = TRUE WHERE id = $1;`
+	updateUserSQL := `UPDATE users SET confirmed = TRUE WHERE id = $1 RETURNING confirmed;`
 
 	udb := u.db.Unsafe()
 	row := udb.QueryRowx(updateUserSQL, userID)
 	err := row.StructScan(user)
 	if err == sql.ErrNoRows {
-		return false, nil
+		return user.Confirmed, nil
 	}
 	if err != nil {
 		u.log.Errorf("Error in retrieving user : %v", err)
-		return false, err
+		return user.Confirmed, err
 	}
 	return user.Confirmed, nil
 

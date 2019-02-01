@@ -7,7 +7,6 @@ import (
 	"github.com/Sach97/gqlgenauth/auth/db"
 	"github.com/Sach97/gqlgenauth/auth/deeplinker"
 	"github.com/Sach97/gqlgenauth/auth/mailer"
-	"github.com/Sach97/gqlgenauth/auth/model"
 	"github.com/Sach97/gqlgenauth/auth/tokenizer"
 	"github.com/Sach97/gqlgenauth/auth/user"
 	"github.com/Sach97/gqlgenauth/auth/utils"
@@ -26,46 +25,13 @@ func main() {
 	RedisClient := tokenizer.NewRedisClient()
 	t := tokenizer.Tokenizer{RedisClient}
 
-	// token, err := client.GenerateToken("userid")
-	// fmt.Println(token)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// value, err := client.GetUserID(token)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println(value)
-
 	// // Mail stuffs
-
-	// p := EmailMessage{
-	// 	ConfirmationUrl: "https://ecstatic-heisenberg-ea2789.netlify.com/confirmation",
-	// }
 	m := mailer.NewMailer(cfg)
-	// to := []string{"sacha.arbonel@hotmail.fr"}
-	// recipients := "recipient@example.ne"
-	// subject := "Confirmation email"
-	// sender := "sacha.arbonel@hotmail.fr"
-	// inputs := mailer.Inputs{
-	// 	Recipients: recipients,
-	// 	Subject:    subject,
-	// 	Sender:     sender,
-	// 	To:         to,
-	// }
-
-	// client.SendEmailTemplate(inputs, "confirmation", p)
 
 	// // Firebase STUFFS
-
 	d := deeplinker.NewFireBaseClient(cfg)
 
-	// link, _ := firebase.GetDynamicLink("randomstring", true)
-	// fmt.Println(link)
-
 	//DB STUFFS
-
 	sql := db.Strategy(db.DriverSQL{Name: "postgres"})
 
 	s, err := sql.OpenDB(cfg)
@@ -73,11 +39,9 @@ func main() {
 		panic(err)
 	}
 
-	// client.
-
 	//Signup(email,password) mutation
-	//create user
-	//send email confirmation
+	//create user done
+	//send email confirmation done
 
 	//ConfirmUser(token) query
 	//Get userid from token
@@ -94,15 +58,24 @@ func main() {
 
 	// User service stuffs
 	u := user.NewUserService(s, l, &t, m, d)
-	fmt.Println("we are here")
-	user := &model.User{
-		Email:    "sacha.arbonel@hotmail.fr",
-		Password: "secretpassword",
-	}
-	_, err = u.CreateUser(user)
+
+	// fmt.Println("we are here")
+	// user := &model.User{
+	// 	Email:    "sacha.arbonel@hotmail.fr",
+	// 	Password: "secretpassword",
+	// }
+	// _, err = u.CreateUser(user)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(user.ID)
+	// u.SendConfirmationEmail(user)
+
+	token := "22ab6e4d-143d-4941-a0cc-805df3748270"
+	verified, err := u.VerifyToken(token)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(user.ID)
-	u.SendConfirmationEmail(user)
+	fmt.Println(verified)
+
 }
