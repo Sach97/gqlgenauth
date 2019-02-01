@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/Sach97/gqlgenauth/auth/context"
+	"github.com/op/go-logging"
 )
 
 //NewLoggerService is a Logger service

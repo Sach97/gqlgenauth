@@ -17,7 +17,8 @@ services:
   postgres:
     image : postgres
     volumes:
-      - ./postgres/pgdata:/pgdata
+      - /psqldata:/var/lib/postgresql/data
+      - ./auth/data/1.0/1_users.sql:/docker-entrypoint-initdb.d/1_usrs.sql 
     environment:
       POSTGRES_DB: dev
       POSTGRES_USER: postgres-dev

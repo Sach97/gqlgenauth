@@ -1,8 +1,16 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/Sach97/gqlgenauth/auth/context"
+	"github.com/Sach97/gqlgenauth/auth/db"
+	"github.com/Sach97/gqlgenauth/auth/deeplinker"
 	"github.com/Sach97/gqlgenauth/auth/mailer"
+	"github.com/Sach97/gqlgenauth/auth/model"
+	"github.com/Sach97/gqlgenauth/auth/tokenizer"
+	"github.com/Sach97/gqlgenauth/auth/user"
+	"github.com/Sach97/gqlgenauth/auth/utils"
 )
 
 type EmailMessage struct {
@@ -15,8 +23,8 @@ func main() {
 	cfg := context.LoadConfig(".")
 
 	// // Token stuffs
-	// RedisClient := tokenizer.NewRedisClient()
-	// client := tokenizer.Tokenizer{RedisClient}
+	RedisClient := tokenizer.NewRedisClient()
+	t := tokenizer.Tokenizer{RedisClient}
 
 	// token, err := client.GenerateToken("userid")
 	// fmt.Println(token)
@@ -32,42 +40,40 @@ func main() {
 
 	// // Mail stuffs
 
-	p := EmailMessage{
-		ConfirmationUrl: "https://ecstatic-heisenberg-ea2789.netlify.com/confirmation",
-	}
-	client := mailer.NewMailer(cfg)
-	to := []string{"sacha.arbonel@hotmail.fr"}
-	recipients := "recipient@example.ne"
-	subject := "Confirmation email"
-	sender := "sacha.arbonel@hotmail.fr"
-	inputs := mailer.Inputs{
-		Recipients: recipients,
-		Subject:    subject,
-		Sender:     sender,
-		To:         to,
-	}
+	// p := EmailMessage{
+	// 	ConfirmationUrl: "https://ecstatic-heisenberg-ea2789.netlify.com/confirmation",
+	// }
+	m := mailer.NewMailer(cfg)
+	// to := []string{"sacha.arbonel@hotmail.fr"}
+	// recipients := "recipient@example.ne"
+	// subject := "Confirmation email"
+	// sender := "sacha.arbonel@hotmail.fr"
+	// inputs := mailer.Inputs{
+	// 	Recipients: recipients,
+	// 	Subject:    subject,
+	// 	Sender:     sender,
+	// 	To:         to,
+	// }
 
-	client.SendEmailTemplate(inputs, "confirmation", p)
+	// client.SendEmailTemplate(inputs, "confirmation", p)
 
 	// // Firebase STUFFS
 
-	// firebase := deeplinker.NewFireBaseClient(cfg)
+	d := deeplinker.NewFireBaseClient(cfg)
 
 	// link, _ := firebase.GetDynamicLink("randomstring", true)
 	// fmt.Println(link)
 
 	//DB STUFFS
 
-	// sql := db.Strategy(db.DriverSQL{Name: "postgres"})
+	sql := db.Strategy(db.DriverSQL{Name: "postgres"})
 
-	// client, err := sql.OpenDB(config)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	s, err := sql.OpenDB(cfg)
+	if err != nil {
+		panic(err)
+	}
 
 	// client.
-	// userService := service.NewUserService(db, roleService, log)
-	// ctx := context.Background()
 
 	//Signup(email,password) mutation
 	//create user
@@ -83,4 +89,20 @@ func main() {
 	//flutter side => save authtoken is shared preference or secure storage
 	//add to header for next requests
 
+	//Log stuffs
+	l := utils.NewLoggerService(cfg)
+
+	// User service stuffs
+	u := user.NewUserService(s, l, &t, m, d)
+	fmt.Println("we are here")
+	user := &model.User{
+		Email:    "sacha.arbonel@hotmail.fr",
+		Password: "secretpassword",
+	}
+	_, err = u.CreateUser(user)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(user.ID)
+	u.SendConfirmationEmail(user)
 }

@@ -33,7 +33,10 @@ type Config struct {
 	ResetPasswordEndpoint string
 
 	//UserService
-	ConfirmationEmailTemplate  string
+	ConfirmationEmailTemplate string
+
+	DebugMode bool
+	LogFormat string
 }
 
 //LoadConfig load the config from path
@@ -69,6 +72,10 @@ func LoadConfig(path string) *Config {
 		DomainURIPrefix:       config.Get("deeplinker.domainURIPrefix").(string),
 		ConfirmationEndpoint:  config.Get("deeplinker.confirmationEndpoint").(string),
 		ResetPasswordEndpoint: config.Get("deeplinker.resetPasswordEndpoint").(string),
+
+		//Log
+		DebugMode: config.Get("log.debug-mode").(bool),
+		LogFormat: config.Get("log.log-format").(string),
 	}
 }
 

@@ -3,39 +3,43 @@ package user
 import (
 	"database/sql"
 	"errors"
-	"html/template"
-	"github.com/Sach97/gqlgenauth/auth/model"
-	"github.com/Sach97/gqlgenauth/auth/tokenizer"
+
+	"github.com/Sach97/gqlgenauth/auth/context"
 	"github.com/Sach97/gqlgenauth/auth/deeplinker"
 	"github.com/Sach97/gqlgenauth/auth/mailer"
+	"github.com/Sach97/gqlgenauth/auth/model"
+	"github.com/Sach97/gqlgenauth/auth/tokenizer"
 	"github.com/jmoiron/sqlx"
+	"github.com/op/go-logging"
 	"github.com/rs/xid"
-
 )
-
 
 // UserService holds the user service struct
 type UserService struct {
-	db        *sqlx.DB
-	log       *logging.Logger
-	tokenizer *tokenizer.Tokenizer
-	mailer *mailer.Service
+	db         *sqlx.DB
+	log        *logging.Logger
+	tokenizer  *tokenizer.Tokenizer
+	mailer     *mailer.Service
 	deeplinker *deeplinker.FireBaseClient
 }
 
+type EmailMessage struct {
+	ConfirmationUrl string
+}
+
 // NewUserService instantiates user service
-func NewUserService(db *sqlx.DB, log *logging.Logger,tokenizer *tokenizer.Tokenizer,mailer *mailer.Mailer
-	deeplinker *deeplinker.Deeplinker) *UserService {
-	return &UserService{db: db, log: log, tokenizer: tokenizer, mailer:mailer,deeplinker:deeplinker}
+func NewUserService(db *sqlx.DB, log *logging.Logger, tokenizer *tokenizer.Tokenizer, mailer *mailer.Service,
+	deeplinker *deeplinker.FireBaseClient) *UserService {
+	return &UserService{db: db, log: log, tokenizer: tokenizer, mailer: mailer, deeplinker: deeplinker}
 }
 
 // CreateUser creates a new user
 func (u *UserService) CreateUser(user *model.User) (*model.User, error) {
 	userID := xid.New()
-	user.ID = userId.String()
-	userSQL := `INSERT INTO users (id, email, password) VALUES (:id, :email, :password)`
+	user.ID = userID.String()
+	userSQL := `INSERT INTO users (id, email, password,confirmed) VALUES (:id, :email, :password, :confirmed)`
 	user.HashedPassword()
-	user.Confirmed := false
+	user.Confirmed = false
 	_, err := u.db.NamedExec(userSQL, user)
 	if err != nil {
 		return nil, err
@@ -44,15 +48,31 @@ func (u *UserService) CreateUser(user *model.User) (*model.User, error) {
 }
 
 // SendEmail sends an email with a confirmation link to a new user
-func (u *UserService) SendConfirmationEmail(user *model.User, p *tokenizer.Payload) error {
-	token,err := u.tokenizer.GenerateToken(user.ID)
+func (u *UserService) SendConfirmationEmail(user *model.User) error {
+	token, err := u.tokenizer.GenerateToken(user.ID)
 	if err != nil {
 		return err
 	}
-	
-	link, _ := u.deeplinker.GetDynamicLink(token, true)
-	email := []string{user.Email}
-	u.mailer.SendEmailTemplate("confirmation",email,nil)
+	link, err := u.deeplinker.GetDynamicLink(token, true)
+	if err != nil {
+		return err
+	}
+	message := EmailMessage{
+		ConfirmationUrl: link,
+	}
+
+	to := []string{user.Email}
+	recipients := ""
+	subject := "Confirmation email"
+	sender := "sacha.arbonel@hotmail.fr"
+	inputs := mailer.Inputs{
+		Recipients: recipients,
+		Subject:    subject,
+		Sender:     sender,
+		To:         to,
+	}
+
+	return u.mailer.SendEmailTemplate(inputs, "confirmation", message)
 }
 
 // ConfirmUser is a service that sets a confirmed user
@@ -70,10 +90,9 @@ func (u *UserService) ConfirmUser(userID string) (bool, error) {
 		u.log.Errorf("Error in retrieving user : %v", err)
 		return false, err
 	}
-	return user, nil
+	return user.Confirmed, nil
 
 }
-
 
 // FindByEmail find a user by email
 func (u *UserService) FindByEmail(email string) (*model.User, error) {
@@ -112,7 +131,6 @@ func (u *UserService) UserExists(userID string) bool {
 
 	return true
 }
-
 
 //ComparePassword compares two passwords
 func (u *UserService) ComparePassword(userCredentials *model.UserCredentials) (*model.User, error) {

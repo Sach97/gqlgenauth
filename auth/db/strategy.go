@@ -1,4 +1,4 @@
-package context
+package db
 
 import (
 	ctx "github.com/Sach97/gqlgenauth/auth/context"

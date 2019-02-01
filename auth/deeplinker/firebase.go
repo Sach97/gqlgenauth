@@ -63,7 +63,7 @@ type Warning struct {
 
 // NewFireBaseClient instantiate a new Firebase Client
 func NewFireBaseClient(config *context.Config) *FireBaseClient {
-	if config.FirebaseApiKey == "" {
+	if config.FirebaseAPIKey == "" {
 		panic("You must set your API key")
 	}
 
@@ -95,7 +95,6 @@ func (c *FireBaseClient) GetDynamicLink(token string, confirm bool) (string, err
 	dynamicLinkInfo := DynamicLinkInfo{DomainURIPrefix: c.DomainURIPrefix, Link: &link, AndroidInfo: &androidInfo}
 
 	p := Payload{DynamicLinkInfo: &dynamicLinkInfo}
-	fmt.Println(c.APIKey)
 	payload, _ := json.Marshal(p)
 
 	//format url
