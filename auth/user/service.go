@@ -15,8 +15,8 @@ import (
 	"github.com/rs/xid"
 )
 
-// UserService holds the user service struct
-type UserService struct {
+//Service holds the user service struct
+type Service struct {
 	db         *sqlx.DB
 	log        *logging.Logger
 	tokenizer  *tokenizer.Tokenizer
@@ -24,14 +24,15 @@ type UserService struct {
 	deeplinker *deeplinker.FireBaseClient
 }
 
+//EmailMessage holds our email struct
 type EmailMessage struct {
-	ConfirmationUrl string
+	ConfirmationURL string
 }
 
 // NewUserService instantiates user service
 func NewUserService(db *sqlx.DB, log *logging.Logger, tokenizer *tokenizer.Tokenizer, mailer *mailer.Service,
-	deeplinker *deeplinker.FireBaseClient) *UserService {
-	return &UserService{db: db, log: log, tokenizer: tokenizer, mailer: mailer, deeplinker: deeplinker}
+	deeplinker *deeplinker.FireBaseClient) *Service {
+	return &Service{db: db, log: log, tokenizer: tokenizer, mailer: mailer, deeplinker: deeplinker}
 }
 
 // CreateUser creates a new user
@@ -48,7 +49,7 @@ func (u *UserService) CreateUser(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
-// SendEmail sends an email with a confirmation link to a new user
+// SendConfirmationEmail sends an email with a confirmation link to a new user
 func (u *UserService) SendConfirmationEmail(user *model.User) error {
 	token, err := u.tokenizer.GenerateToken(user.ID)
 	if err != nil {
@@ -59,7 +60,7 @@ func (u *UserService) SendConfirmationEmail(user *model.User) error {
 		return err
 	}
 	message := EmailMessage{
-		ConfirmationUrl: link,
+		ConfirmationURL: link,
 	}
 
 	to := []string{user.Email}
@@ -79,9 +80,10 @@ func (u *UserService) SendConfirmationEmail(user *model.User) error {
 //TODO: handler when email already exists in database (pq: duplicate key value violates unique constraint "users_email_key")
 
 //Get userid from token
-// Verify if user exists from userid
+//
 //send boolean isConfirmed
 
+//VerifyUserToken decode userid from token and verify if exists
 func (u *UserService) VerifyUserToken(token string) (bool, error) {
 	userID, err := u.tokenizer.GetUserID(token)
 	if err != nil {
