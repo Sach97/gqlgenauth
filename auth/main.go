@@ -1,19 +1,18 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/Sach97/gqlgenauth/auth/context"
 	"github.com/Sach97/gqlgenauth/auth/db"
 	"github.com/Sach97/gqlgenauth/auth/deeplinker"
 	"github.com/Sach97/gqlgenauth/auth/jwt"
 	"github.com/Sach97/gqlgenauth/auth/mailer"
+	"github.com/Sach97/gqlgenauth/auth/model"
 	"github.com/Sach97/gqlgenauth/auth/tokenizer"
 	"github.com/Sach97/gqlgenauth/auth/user"
 	"github.com/Sach97/gqlgenauth/auth/utils"
 )
-
-type EmailMessage struct {
-	ConfirmationUrl string
-}
 
 func main() {
 
@@ -82,6 +81,8 @@ func main() {
 	// 	fmt.Println(err)
 	// }
 	// fmt.Println(verified)
+	credentials := model.UserCredentials{Email: "sacha.arbonel@hotmail.fr", Password: "secretpassword"}
+	token, err := u.Login(&credentials)
+	fmt.Println(token)
 
 }
-

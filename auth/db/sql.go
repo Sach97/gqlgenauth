@@ -14,7 +14,7 @@ type DriverSQL struct {
 	Name string
 }
 
-//TODO: implements something like this https://dominicstpierre.com/handling-postgresql-and-mongodb-in-one-go-data-package-excerpt-from-my-book-f23bfe8d7cb7
+//TODO: implements something like this https://dominicstpierre.com/handling-postgresql-and-mongodb-in-one-go-data-package-excerpt-from-my-book-f23bfe8d7cb7 for dealing with mongodb
 
 //OpenDB open a Sql connexion
 func (d DriverSQL) OpenDB(config *ctx.Config) (*sqlx.DB, error) {
@@ -26,6 +26,9 @@ func (d DriverSQL) OpenDB(config *ctx.Config) (*sqlx.DB, error) {
 	}
 
 	err = db.Ping()
+	if err != nil {
+		log.Println("Not connected ")
+	}
 
 	log.Println("Database is connected ")
 	return db, err

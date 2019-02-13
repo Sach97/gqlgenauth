@@ -17,6 +17,21 @@ import (
 	"github.com/rs/xid"
 )
 
+//Service holds the user service struct
+type Service struct {
+	db         *sqlx.DB
+	log        *logging.Logger
+	tokenizer  *tokenizer.Tokenizer
+	mailer     *mailer.Service
+	deeplinker *deeplinker.FireBaseClient
+	jwt        *jwt.AuthService
+}
+
+//EmailMessage holds our email struct
+type EmailMessage struct {
+	ConfirmationURL string
+}
+
 type CustomNamespace struct {
 	Sub                    string                 `json:"sub"`
 	Name                   string                 `json:"name"`
@@ -31,21 +46,6 @@ type HTTPSHasuraIoJwtClaims struct {
 	XHasuraUserID       string   `json:"x-hasura-user-id"`
 	XHasuraOrgID        string   `json:"x-hasura-org-id"`
 	XHasuraCustom       string   `json:"x-hasura-custom"`
-}
-
-//Service holds the user service struct
-type Service struct {
-	db         *sqlx.DB
-	log        *logging.Logger
-	tokenizer  *tokenizer.Tokenizer
-	mailer     *mailer.Service
-	deeplinker *deeplinker.FireBaseClient
-	jwt        *jwt.AuthService
-}
-
-//EmailMessage holds our email struct
-type EmailMessage struct {
-	ConfirmationURL string
 }
 
 // NewUserService instantiates user service
@@ -68,15 +68,21 @@ func (u *Service) CreateUser(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
-// func (u *Service) Login(user *model.User)  {
-// if password match user exists and is confirmed signjwt and return token
-// }
+func (u *Service) Login(credentials *model.UserCredentials) (string, error) {
+	user, _ := u.FindByEmail(credentials.Email)
+	same := user.ComparePassword(credentials.Password)
+	if !same {
+		return "", fmt.Errorf("password doesnt match try again")
+	}
+	token, err := u.SignJwt(user)
+	return token, err
+}
 
-func (u *Service) SignJwt(user *model.User) (string, error) { //TODO cleaner way to do this
-	customMap := CustomNamespace{
+func (u *Service) SignJwt(user *model.User) (string, error) { //TODO: cleaner way to do this
+	customMapClaims := CustomNamespace{
 		Sub:   base64.StdEncoding.EncodeToString([]byte(user.ID)),
 		Name:  base64.StdEncoding.EncodeToString([]byte(user.Username)),
-		Admin: true,
+		Admin: true, //TODO: change this
 		//Iat:   time.Now().Add(time.Second * *time.Duration(cfg.JWTExpireIn)).Unix(),
 		HTTPSHasuraIoJwtClaims: HTTPSHasuraIoJwtClaims{
 			XHasuraAllowedRoles: []string{"user", "editor"},
@@ -85,9 +91,7 @@ func (u *Service) SignJwt(user *model.User) (string, error) { //TODO cleaner way
 			XHasuraCustom:       "custom-value",
 		},
 	}
-
-	//TODO: if user if user is confirmed sign token
-	tokenb, err := u.jwt.SignJWT(customMap)
+	tokenb, err := u.jwt.SignJWT(customMapClaims)
 	t := []byte(*tokenb)
 	token := string(t)
 	return token, err
@@ -106,6 +110,7 @@ func (u *Service) SendConfirmationEmail(user *model.User) error {
 	message := EmailMessage{
 		ConfirmationURL: link,
 	}
+	//TODO: put username or something in message
 
 	to := []string{user.Email}
 	recipients := ""
@@ -122,10 +127,6 @@ func (u *Service) SendConfirmationEmail(user *model.User) error {
 }
 
 //TODO: handler when email already exists in database (pq: duplicate key value violates unique constraint "users_email_key")
-
-//Get userid from token
-//
-//send boolean isConfirmed
 
 //VerifyUserToken decode userid from token and verify if exists
 func (u *Service) VerifyUserToken(token string) (bool, error) {
@@ -183,7 +184,6 @@ func (u *Service) FindByEmail(email string) (*model.User, error) {
 // UserExists returns true if user exists
 func (u *Service) UserExists(userID string) bool {
 	user := &model.User{}
-
 	userSQL := `SELECT * FROM users WHERE ID = $1`
 	udb := u.db.Unsafe()
 	row := udb.QueryRowx(userSQL, userID)

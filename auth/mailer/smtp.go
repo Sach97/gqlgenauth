@@ -74,7 +74,7 @@ func (s *Service) SendEmail(message Message) error {
 	return err
 }
 
-//TODO: move this to mailer services in services or config mechanism
+//TODO: load template from config + enforce confirmation.html exists
 
 //SendEmailTemplate sends a templated email
 func (s *Service) SendEmailTemplate(inputs Inputs, emailType string, data interface{}) error {
