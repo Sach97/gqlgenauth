@@ -47,7 +47,7 @@ func (u *Service) Login(credentials *model.UserCredentials) (string, error) {
 		return "", fmt.Errorf("We've sent you an email to %s please click on the click in order to complete your registration", user.Email)
 	}
 
-	token, err := u.signJwt(user)
+	token, err := u.signJWT(user)
 	if err != nil {
 		u.log.Errorf("Error during jwt signing of user: %v", err)
 	}

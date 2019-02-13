@@ -51,8 +51,8 @@ func NewUserService(msg *context.MessageService, db *sqlx.DB, log *logging.Logge
 	return &Service{msg: msg, db: db, log: log, jwt: jwt, tokenizer: tokenizer, mailer: mailer, deeplinker: deeplinker}
 }
 
-//signJwt sign a user jwt
-func (u *Service) signJwt(user *model.User) (string, error) { //TODO: cleaner way to do this
+//signJWT sign a user jwt
+func (u *Service) signJWT(user *model.User) (string, error) { //TODO: cleaner way to do this
 	customMapClaims := CustomNamespace{
 		Sub:   base64.StdEncoding.EncodeToString([]byte(user.ID)),
 		Name:  base64.StdEncoding.EncodeToString([]byte(user.Username)),
