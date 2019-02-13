@@ -67,17 +67,20 @@ func main() {
 	u := user.NewUserService(msg, s, l, a, &t, m, d)
 
 	credentials := model.UserCredentials{Email: "sacha.arbonel@hotmail.fr", Password: "secretpassword"}
-	signup := u.Signup(&credentials)
-	fmt.Println(signup)
+	// signup := u.Signup(&credentials)
+	// fmt.Println(signup)
 
-	// token := "e51ea03b-4eea-4db8-b81e-81365d4350e0"
-	// verified, err := u.VerifyUserToken(token)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println(verified)
+	token := "cfb74724-c070-4b73-a255-a2d2cf8cce06"
+	verified, err := u.VerifyUserToken(token)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(verified)
 
-	// token, err := u.Login(&credentials)
-	// fmt.Println(token)
-	// fmt.Println(err)
+	token, err = u.Login(&credentials)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(token)
+
 }
