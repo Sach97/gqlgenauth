@@ -60,20 +60,15 @@ func main() {
 	//JWT stuffs
 	a := jwt.NewAuthService(cfg)
 
-	// User service stuffs
-	u := user.NewUserService(s, l, a, &t, m, d)
+	//Message service stuffs
+	msg := context.NewMessageService(cfg)
 
-	// fmt.Println("we are here")
-	// user := &model.User{
-	// 	Email:    "sacha.arbonel@hotmail.fr",
-	// 	Password: "secretpassword",
-	// }
-	// _, err = u.CreateUser(user)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println(user.ID)
-	// u.SendConfirmationEmail(user)
+	// User service stuffs
+	u := user.NewUserService(msg, s, l, a, &t, m, d)
+
+	credentials := model.UserCredentials{Email: "sacha.arbonel@hotmail.fr", Password: "secretpassword"}
+	signup := u.Signup(&credentials)
+	fmt.Println(signup)
 
 	// token := "e51ea03b-4eea-4db8-b81e-81365d4350e0"
 	// verified, err := u.VerifyUserToken(token)
@@ -81,8 +76,8 @@ func main() {
 	// 	fmt.Println(err)
 	// }
 	// fmt.Println(verified)
-	credentials := model.UserCredentials{Email: "sacha.arbonel@hotmail.fr", Password: "secretpassword"}
-	token, err := u.Login(&credentials)
-	fmt.Println(token)
 
+	// token, err := u.Login(&credentials)
+	// fmt.Println(token)
+	// fmt.Println(err)
 }

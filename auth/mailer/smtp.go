@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"log"
 	"net/smtp"
 
 	"github.com/Sach97/gqlgenauth/auth/context"
@@ -64,14 +63,16 @@ func NewMailer(config *context.Config) *Service {
 	}
 }
 
+//TODO: handler error message code for example Sender syntax error 501
+
 //SendEmail sends an email
 func (s *Service) SendEmail(message Message) error {
 	auth := smtp.PlainAuth(s.Identity, s.Username, s.Password, s.Host)
 	err := smtp.SendMail(s.Address, auth, message.Sender, message.To, message.Msg)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	return err
+	return nil
 }
 
 //TODO: load template from config + enforce confirmation.html exists
@@ -82,10 +83,16 @@ func (s *Service) SendEmailTemplate(inputs Inputs, emailType string, data interf
 	t := template.Must(template.ParseFiles(fmt.Sprintf("%s.html", emailType)))
 
 	var buff bytes.Buffer
-	t.Execute(&buff, data)
+	err := t.Execute(&buff, data)
+	if err != nil {
+		return err
+	}
 	body := buff.String()
 	inputs.Body = body
 	msg := s.NewMessage(inputs)
-	err := s.SendEmail(msg)
-	return err
+	err = s.SendEmail(msg)
+	if err != nil {
+		return err
+	}
+	return nil
 }
