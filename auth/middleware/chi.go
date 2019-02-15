@@ -15,7 +15,7 @@ func (c *Chi) AuthMiddleware(next http.Handler) http.Handler {
 
 		tokenString := jwtauth.TokenFromHeader(req)
 
-		token, err := VerifyToken(tokenString)
+		token, err := ValidateJWT(tokenString)
 		if err != nil || !token.Valid {
 			fmt.Errorf("Token is not valid", err)
 		}

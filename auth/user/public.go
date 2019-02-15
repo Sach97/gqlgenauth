@@ -6,6 +6,8 @@ import (
 	"github.com/Sach97/gqlgenauth/auth/model"
 )
 
+//TODO: strategy pattern or something if the user doesnt want to use deeplinks but just an email
+
 //Signup register a user in db and send an email and return instructions
 func (u *Service) Signup(credentials *model.UserCredentials) string {
 	user := &model.User{
@@ -21,7 +23,7 @@ func (u *Service) Signup(credentials *model.UserCredentials) string {
 		u.log.Errorf("Error during user creation : %v", err)
 		return fmt.Sprintf("Sorry an error occured please try again")
 	}
-	//fmt.Println(user.ID)
+
 	err = u.sendConfirmationEmail(newUser)
 	if err != nil {
 		u.log.Errorf("Error during sending email : %v", err)

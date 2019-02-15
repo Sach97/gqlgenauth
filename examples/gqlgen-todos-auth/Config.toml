@@ -1,4 +1,4 @@
-app-name = "go-user"
+app-name = "glqgen-todos-auth"
 version = 1.0
 
 [db]

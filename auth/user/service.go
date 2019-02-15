@@ -3,7 +3,7 @@ package user
 import (
 	"encoding/base64"
 
-	"github.com/Sach97/gqlgenauth/auth/context"
+	gcontext "github.com/Sach97/gqlgenauth/auth/context"
 	"github.com/Sach97/gqlgenauth/auth/deeplinker"
 	"github.com/Sach97/gqlgenauth/auth/jwt"
 	"github.com/Sach97/gqlgenauth/auth/mailer"
@@ -15,7 +15,7 @@ import (
 
 //Service holds the user service struct
 type Service struct {
-	msg        *context.MessageService
+	msg        *gcontext.MessageService
 	db         *sqlx.DB
 	log        *logging.Logger
 	tokenizer  *tokenizer.Tokenizer
@@ -46,7 +46,7 @@ type HTTPSHasuraIoJwtClaims struct {
 }
 
 // NewUserService instantiates user service
-func NewUserService(msg *context.MessageService, db *sqlx.DB, log *logging.Logger, jwt *jwt.AuthService, tokenizer *tokenizer.Tokenizer, mailer *mailer.Service,
+func NewUserService(msg *gcontext.MessageService, db *sqlx.DB, log *logging.Logger, jwt *jwt.AuthService, tokenizer *tokenizer.Tokenizer, mailer *mailer.Service,
 	deeplinker *deeplinker.FireBaseClient) *Service {
 	return &Service{msg: msg, db: db, log: log, jwt: jwt, tokenizer: tokenizer, mailer: mailer, deeplinker: deeplinker}
 }
