@@ -85,7 +85,7 @@ func main() {
 	r.Handle("/", handler.Playground("GraphQL playground", "/query"))
 	r.Handle("/query", handler.GraphQL(gqlgen_todos_auth.NewExecutableSchema(gqlgen_todos_auth.Config{Resolvers: &gqlgen_todos_auth.Resolver{
 		UserService:    userService,
-		RouterStrategy: strategy,
+		RouterStrategy: &strategy,
 	}})))
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
