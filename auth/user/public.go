@@ -73,3 +73,12 @@ func (u *Service) VerifyUserToken(token string) (bool, error) {
 	return u.confirmUser(userID)
 
 }
+
+func (u *Service) FindByID(userID string) (*model.User, error) {
+
+	userExists := u.userIDExists(userID)
+	if !userExists {
+		return nil, fmt.Errorf("This user doesnt exists")
+	}
+	return u.findByID(userID)
+}

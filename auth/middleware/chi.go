@@ -2,20 +2,25 @@ package middleware
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"net/http"
 
+	"github.com/Sach97/gqlgenauth/auth/jwt"
+	"github.com/Sach97/gqlgenauth/auth/user"
 	"github.com/go-chi/jwtauth"
 )
 
-type Chi struct{}
+type Chi struct {
+	AuthService *jwt.AuthService
+}
 
-func (c *Chi) AuthMiddleware(next http.Handler) http.Handler {
+func (c Chi) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 
 		tokenString := jwtauth.TokenFromHeader(req)
 
-		token, err := ValidateJWT(tokenString)
+		token, err := c.AuthService.ValidateJWT(tokenString, user.MyCustomClaims{})
 		if err != nil || !token.Valid {
 			fmt.Errorf("Token is not valid", err)
 		}
@@ -27,10 +32,12 @@ func (c *Chi) AuthMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (c *Chi) GetUserID(ctx context.Context) (string, error) {
+func (c Chi) GetUserID(ctx context.Context) (string, error) {
 	_, claims, err := jwtauth.FromContext(ctx)
-	userID := claims["userID"].(string)
-	return userID, err
+
+	sub := claims["sub"].(string)
+	userID, err := base64.StdEncoding.DecodeString(string(sub))
+	return string(userID), err
 }
 
 //usage

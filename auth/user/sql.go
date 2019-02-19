@@ -65,7 +65,27 @@ func (u *Service) findByEmail(email string) (*model.User, error) {
 	return user, nil
 }
 
-// userIDExists returns true if user exists with is id
+// findByID find a user by email
+func (u *Service) findByID(userID string) (*model.User, error) {
+	//TODO: public facing errors
+	user := &model.User{}
+
+	userSQL := `SELECT * FROM users WHERE ID = $1`
+	udb := u.db.Unsafe()
+	row := udb.QueryRowx(userSQL, userID)
+	err := row.StructScan(user)
+	if err == sql.ErrNoRows {
+		return user, nil
+	}
+	if err != nil {
+		u.log.Errorf("Error in retrieving user by his id %s: %v", userID, err)
+		return nil, err
+	}
+
+	return user, nil
+}
+
+// UserIDExists returns true if user exists with is id
 func (u *Service) userIDExists(userID string) bool {
 	user := &model.User{}
 	userSQL := `SELECT * FROM users WHERE ID = $1`

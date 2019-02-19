@@ -28,6 +28,7 @@ type Service struct {
 //EmailMessage holds our email struct
 type EmailMessage struct {
 	ConfirmationURL string
+	//Username
 }
 
 type HTTPSHasuraIoJwtClaims struct {
@@ -51,16 +52,17 @@ func NewUserService(msg *gcontext.MessageService, db *sqlx.DB, log *logging.Logg
 
 //signJWT sign a user jwt
 func (u *Service) signJWT(user *model.User) (string, error) { //TODO: cleaner way to do this
-
+	//TODO: fetch roles from db
 	claims := MyCustomClaims{
 		jwtg.StandardClaims{
+			Subject:   base64.StdEncoding.EncodeToString([]byte(user.ID)),
 			ExpiresAt: 1516239022,
 			Issuer:    "test",
 		},
 		HTTPSHasuraIoJwtClaims{
 			XHasuraAllowedRoles: []string{"user", "editor"},
 			XHasuraDefaultRole:  "user",
-			XHasuraOrgID:        base64.StdEncoding.EncodeToString([]byte("1234567890")),
+			XHasuraOrgID:        base64.StdEncoding.EncodeToString([]byte(user.ID)),
 			XHasuraCustom:       "custom-value",
 		},
 	}
@@ -81,6 +83,7 @@ func (u *Service) sendConfirmationEmail(user *model.User) error {
 		u.log.Errorf("Error retrieving deeplink from firebase : %v", err)
 		return err
 	}
+	//TODO: deeplinker strategy None or Firebase. None return example.com/confirmation?token=<token>
 	message := EmailMessage{
 		ConfirmationURL: link,
 	}

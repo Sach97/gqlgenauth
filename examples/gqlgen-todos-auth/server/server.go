@@ -11,10 +11,12 @@ import (
 	"github.com/Sach97/gqlgenauth/auth/deeplinker"
 	"github.com/Sach97/gqlgenauth/auth/jwt"
 	"github.com/Sach97/gqlgenauth/auth/mailer"
+	"github.com/Sach97/gqlgenauth/auth/middleware"
 	"github.com/Sach97/gqlgenauth/auth/tokenizer"
 	"github.com/Sach97/gqlgenauth/auth/user"
 	"github.com/Sach97/gqlgenauth/auth/utils"
 	gqlgen_todos_auth "github.com/Sach97/gqlgenauth/examples/gqlgen-todos-auth"
+	"github.com/go-chi/chi"
 )
 
 const defaultPort = "8081"
@@ -50,13 +52,13 @@ func main() {
 	l := utils.NewLoggerService(cfg)
 
 	//JWT stuffs
-	a := jwt.NewAuthService(cfg)
+	auth := jwt.NewAuthService(cfg)
 
 	//Message service stuffs
 	msg := gcontext.NewMessageService(cfg)
 
 	// User service stuffs
-	u := user.NewUserService(msg, s, l, a, &t, m, d)
+	userService := user.NewUserService(msg, s, l, auth, &t, m, d) //TODO: remove ugly pointer
 	// credentials := model.UserCredentials{Email: "sacha.arbonel@hotmail.fr", Password: "secretpassword"}
 	// signup := u.Signup(&credentials)
 	// fmt.Println(signup)
@@ -77,13 +79,15 @@ func main() {
 	//ctx = context.WithValue(ctx, "dbService", s)
 
 	//TODO: find a better way to do this like auth
-	// r := chi.NewRouter()
-
-	http.Handle("/", handler.Playground("GraphQL playground", "/query"))
-	http.Handle("/query", handler.GraphQL(gqlgen_todos_auth.NewExecutableSchema(gqlgen_todos_auth.Config{Resolvers: &gqlgen_todos_auth.Resolver{
-		UserService: u,
+	r := chi.NewRouter()
+	strategy := middleware.RouterStrategy{middleware.Chi{AuthService: auth}}
+	r.Use(strategy.AuthMiddleware)
+	r.Handle("/", handler.Playground("GraphQL playground", "/query"))
+	r.Handle("/query", handler.GraphQL(gqlgen_todos_auth.NewExecutableSchema(gqlgen_todos_auth.Config{Resolvers: &gqlgen_todos_auth.Resolver{
+		UserService:    userService,
+		RouterStrategy: strategy,
 	}})))
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, r))
 }
