@@ -20,22 +20,22 @@ func (c Chi) AuthMiddleware(next http.Handler) http.Handler {
 
 		tokenString := jwtauth.TokenFromHeader(req)
 
-		token, err := c.AuthService.ValidateJWT(tokenString, user.MyCustomClaims{})
-		if err != nil || !token.Valid {
+		token, err := c.AuthService.ValidateJWT(tokenString, &user.MyCustomClaims{})
+		if err != nil || !token.Valid { //
+			fmt.Println("we are here")
 			fmt.Errorf("Token is not valid", err)
 		}
 		ctx := req.Context()
-		newCtx := jwtauth.NewContext(ctx, token, err)
-
-		req = req.WithContext(newCtx)
+		ctx = context.WithValue(ctx, "error", err) //TODO: solve this
+		ctx = context.WithValue(ctx, "claims", token.Claims)
+		req = req.WithContext(ctx)
 		next.ServeHTTP(w, req)
 	})
 }
 
 func (c Chi) GetUserID(ctx context.Context) (string, error) {
-	_, claims, err := jwtauth.FromContext(ctx)
-
-	sub := claims["sub"].(string)
+	claims := ctx.Value("claims").(*user.MyCustomClaims)
+	sub := claims.StandardClaims.Subject
 	userID, err := base64.StdEncoding.DecodeString(string(sub))
 	return string(userID), err
 }
