@@ -20,6 +20,10 @@ func (r *Resolver) Query() QueryResolver {
 	return &queryResolver{r}
 }
 
+func (r *Resolver) User() UserResolver {
+	return &userResolver{r}
+}
+
 type mutationResolver struct{ *Resolver }
 
 func (r *mutationResolver) Signup(ctx context.Context, email string, password string) (Instructions, error) {
@@ -44,8 +48,14 @@ func (r *mutationResolver) VerifyToken(ctx context.Context, token string) (bool,
 
 type queryResolver struct{ *Resolver }
 
-func (r *queryResolver) Me(ctx context.Context) (*User, error) {
-	userID, err := r.RouterStrategy.GetUserID(ctx)
+func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
+	userID, _ := r.RouterStrategy.GetUserID(ctx)
 	//if userid exists retrive user
 	return r.UserService.FindByID(userID)
+}
+
+type userResolver struct{ *Resolver }
+
+func (r *userResolver) Name(ctx context.Context, obj *model.User) (string, error) {
+	panic("not implemented")
 }

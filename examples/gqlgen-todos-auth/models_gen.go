@@ -9,10 +9,3 @@ type AuthPayload struct {
 type Instructions struct {
 	Text string `json:"text"`
 }
-
-type User struct {
-	ID        string `json:"id"`
-	Email     string `json:"email"`
-	Name      string `json:"name"`
-	CreatedAt string `json:"createdAt"`
-}

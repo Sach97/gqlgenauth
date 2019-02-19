@@ -3,6 +3,7 @@ package tmp
 import (
 	"context"
 
+	"github.com/Sach97/gqlgenauth/auth/model"
 	"github.com/Sach97/gqlgenauth/examples/gqlgen-todos-auth"
 )
 
@@ -13,6 +14,9 @@ func (r *Resolver) Mutation() MutationResolver {
 }
 func (r *Resolver) Query() QueryResolver {
 	return &queryResolver{r}
+}
+func (r *Resolver) User() UserResolver {
+	return &userResolver{r}
 }
 
 type mutationResolver struct{ *Resolver }
@@ -29,6 +33,12 @@ func (r *mutationResolver) VerifyToken(ctx context.Context, token string) (bool,
 
 type queryResolver struct{ *Resolver }
 
-func (r *queryResolver) Me(ctx context.Context) (*gqlgen_todos_auth.User, error) {
+func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
+	panic("not implemented")
+}
+
+type userResolver struct{ *Resolver }
+
+func (r *userResolver) Name(ctx context.Context, obj *model.User) (string, error) {
 	panic("not implemented")
 }
