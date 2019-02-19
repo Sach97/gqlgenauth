@@ -30,6 +30,10 @@ func (r *mutationResolver) Login(ctx context.Context, email string, password str
 	panic("not implemented")
 }
 
+func (r *mutationResolver) VerifyToken(ctx context.Context, token string) (bool, error) {
+	return r.UserService.VerifyUserToken(token)
+}
+
 type queryResolver struct{ *Resolver }
 
 func (r *queryResolver) Me(ctx context.Context) (*User, error) {

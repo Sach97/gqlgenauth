@@ -2,6 +2,7 @@ package user
 
 import (
 	"encoding/base64"
+	"fmt"
 
 	gcontext "github.com/Sach97/gqlgenauth/auth/context"
 	"github.com/Sach97/gqlgenauth/auth/deeplinker"
@@ -65,9 +66,11 @@ func (u *Service) signJWT(user *model.User) (string, error) { //TODO: cleaner wa
 			XHasuraCustom:       "custom-value",
 		},
 	}
+	fmt.Println(customMapClaims)
 	tokenb, err := u.jwt.SignJWT(customMapClaims)
 	t := []byte(*tokenb)
 	token := string(t)
+	u.jwt.ValidateJWT(&token)
 	return token, err
 }
 

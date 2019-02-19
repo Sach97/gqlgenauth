@@ -7,11 +7,11 @@ type Query {
 type Mutation {
   signup(email: String!, password: String!): Instructions!
   login(email: String!, password: String!): AuthPayload!
+  verifyToken(token:String!): Boolean!
 }
 
 type AuthPayload {
   token: String!
-  user: User!
 }
 
 type Instructions {
