@@ -27,7 +27,10 @@ func (r *mutationResolver) Signup(ctx context.Context, email string, password st
 	}, nil
 }
 func (r *mutationResolver) Login(ctx context.Context, email string, password string) (AuthPayload, error) {
-	panic("not implemented")
+	token, err := r.UserService.Login(&model.UserCredentials{Email: email, Password: password})
+	return AuthPayload{
+		Token: token,
+	}, err
 }
 
 func (r *mutationResolver) VerifyToken(ctx context.Context, token string) (bool, error) {

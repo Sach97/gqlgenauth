@@ -2,7 +2,6 @@ package user
 
 import (
 	"encoding/base64"
-	"fmt"
 
 	gcontext "github.com/Sach97/gqlgenauth/auth/context"
 	"github.com/Sach97/gqlgenauth/auth/deeplinker"
@@ -10,6 +9,7 @@ import (
 	"github.com/Sach97/gqlgenauth/auth/mailer"
 	"github.com/Sach97/gqlgenauth/auth/model"
 	"github.com/Sach97/gqlgenauth/auth/tokenizer"
+	jwtg "github.com/dgrijalva/jwt-go"
 	"github.com/jmoiron/sqlx"
 	"github.com/op/go-logging"
 )
@@ -30,20 +30,17 @@ type EmailMessage struct {
 	ConfirmationURL string
 }
 
-type CustomNamespace struct {
-	Sub                    string                 `json:"sub"`
-	Name                   string                 `json:"name"`
-	Admin                  bool                   `json:"admin"`
-	Iat                    int64                  `json:"iat"`
-	HTTPSHasuraIoJwtClaims HTTPSHasuraIoJwtClaims `json:"https://hasura.io/jwt/claims"`
-}
-
 type HTTPSHasuraIoJwtClaims struct {
 	XHasuraAllowedRoles []string `json:"x-hasura-allowed-roles"`
 	XHasuraDefaultRole  string   `json:"x-hasura-default-role"`
 	XHasuraUserID       string   `json:"x-hasura-user-id"`
 	XHasuraOrgID        string   `json:"x-hasura-org-id"`
 	XHasuraCustom       string   `json:"x-hasura-custom"`
+}
+
+type MyCustomClaims struct {
+	jwtg.StandardClaims
+	HTTPSHasuraIoJwtClaims HTTPSHasuraIoJwtClaims `json:"https://hasura.io/jwt/claims"`
 }
 
 // NewUserService instantiates user service
@@ -54,23 +51,20 @@ func NewUserService(msg *gcontext.MessageService, db *sqlx.DB, log *logging.Logg
 
 //signJWT sign a user jwt
 func (u *Service) signJWT(user *model.User) (string, error) { //TODO: cleaner way to do this
-	customMapClaims := CustomNamespace{
-		Sub:   base64.StdEncoding.EncodeToString([]byte(user.ID)),
-		Name:  base64.StdEncoding.EncodeToString([]byte(user.Username)),
-		Admin: true, //TODO: change this
-		//Iat:   time.Now().Add(time.Second * *time.Duration(cfg.JWTExpireIn)).Unix(),
-		HTTPSHasuraIoJwtClaims: HTTPSHasuraIoJwtClaims{
+
+	claims := MyCustomClaims{
+		jwtg.StandardClaims{
+			ExpiresAt: 1516239022,
+			Issuer:    "test",
+		},
+		HTTPSHasuraIoJwtClaims{
 			XHasuraAllowedRoles: []string{"user", "editor"},
 			XHasuraDefaultRole:  "user",
-			XHasuraOrgID:        base64.StdEncoding.EncodeToString([]byte(user.ID)),
+			XHasuraOrgID:        base64.StdEncoding.EncodeToString([]byte("1234567890")),
 			XHasuraCustom:       "custom-value",
 		},
 	}
-	fmt.Println(customMapClaims)
-	tokenb, err := u.jwt.SignJWT(customMapClaims)
-	t := []byte(*tokenb)
-	token := string(t)
-	u.jwt.ValidateJWT(&token)
+	token, err := u.jwt.SignJWT(claims)
 	return token, err
 }
 
