@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -20,20 +21,27 @@ func NewAuthService(config *context.Config) *AuthService {
 	return &AuthService{&config.AppName, &config.JWTSecret, &config.JWTExpireIn}
 }
 
-type CustomMapClaims interface {
-	Valid() error
+type CustomClaims struct {
+	StandardClaims jwt.StandardClaims
+	CustomClaimsI  map[string]interface{}
+}
+
+//hacky but I did'nt find better wsay to do this
+func (c CustomClaims) Valid() error {
+	return errors.New("")
+
 }
 
 //SignJWT signs a new jwt
-func (a *AuthService) SignJWT(customMapClaims CustomMapClaims) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, customMapClaims)
+func (a *AuthService) SignJWT(customClaims *CustomClaims) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, customClaims)
 	tokenString, err := token.SignedString([]byte(*a.signedSecret))
 	return tokenString, err
 }
 
 //ValidateJWT validates a token string
-func (a *AuthService) ValidateJWT(tokenString string, customMapClaims CustomMapClaims) (*jwt.Token, error) {
-	token, err := jwt.ParseWithClaims(tokenString, customMapClaims, func(token *jwt.Token) (interface{}, error) {
+func (a *AuthService) ValidateJWT(tokenString string, customClaims *CustomClaims) (*jwt.Token, error) {
+	token, err := jwt.ParseWithClaims(tokenString, customClaims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("	unexpected signing method: %v", token.Header["alg"])
 		}

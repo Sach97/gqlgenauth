@@ -43,14 +43,14 @@ func (r *mutationResolver) Login(ctx context.Context, email string, password str
 
 func (r *mutationResolver) VerifyToken(ctx context.Context, token string) (bool, error) {
 	return r.UserService.VerifyUserToken(token)
-	//TODO
+
 }
 
 type queryResolver struct{ *Resolver }
 
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	userID, _ := r.RouterStrategy.GetUserID(ctx)
-	//if userid exists retrive user
+	//TODO: if userid exists retrive user
 	return r.UserService.FindByID(userID)
 }
 

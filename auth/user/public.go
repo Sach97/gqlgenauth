@@ -35,6 +35,7 @@ func (u *Service) Signup(credentials *model.UserCredentials) string {
 
 //Login return a jwt token if user is confirmed
 func (u *Service) Login(credentials *model.UserCredentials) (string, error) {
+	//TODO: builder input
 	userExists := u.userEmailExists(credentials.Email)
 
 	if !userExists {
@@ -49,7 +50,7 @@ func (u *Service) Login(credentials *model.UserCredentials) (string, error) {
 		return "", fmt.Errorf("We've sent you an email to %s please click on the click in order to complete your registration", user.Email)
 	}
 
-	token, err := u.signJWT(user)
+	token, err := u.signJWT(user) //TODO: same builder input here
 	if err != nil {
 		u.log.Errorf("Error during jwt signing of user: %v", err)
 	}

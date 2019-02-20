@@ -25,7 +25,7 @@ func (b hasuraClaimsBuilder) DefaultRole(defaultRole string) hasuraClaimsBuilder
 }
 
 func (b hasuraClaimsBuilder) UserID(userID string) hasuraClaimsBuilder {
-	return builder.Set(b, "UserID", userID).(hasuraClaimsBuilder)
+	return builder.Set(b, "UserID", base64.StdEncoding.EncodeToString([]byte(userID))).(hasuraClaimsBuilder)
 }
 
 func (b hasuraClaimsBuilder) OrgID(orgID string) hasuraClaimsBuilder {

@@ -1,19 +1,17 @@
 package builder
 
 import (
+	"encoding/base64"
+
+	auth "github.com/Sach97/gqlgenauth/auth/jwt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/lann/builder"
 )
 
-type CustomClaims struct {
-	StandardClaims jwt.StandardClaims
-	CustomClaimsI  map[string]interface{}
-}
-
 type customClaimsBuilder builder.Builder
 
 func (b customClaimsBuilder) Subject(subject string) customClaimsBuilder {
-	return builder.Set(b, "Subject", subject).(customClaimsBuilder)
+	return builder.Set(b, "Subject", base64.StdEncoding.EncodeToString([]byte(subject))).(customClaimsBuilder)
 }
 
 func (b customClaimsBuilder) Audience(audience string) customClaimsBuilder {
@@ -40,12 +38,12 @@ func (b customClaimsBuilder) NotBefore(notBefore int64) customClaimsBuilder {
 	return builder.Set(b, "NotBefore", notBefore).(customClaimsBuilder)
 }
 
-func (b customClaimsBuilder) Build(jsonKey string, customClaims interface{}) CustomClaims { //Get
+func (b customClaimsBuilder) Build(jsonKey string, customClaims interface{}) auth.CustomClaims { //Get
 	standardClaims := builder.GetStruct(b).(jwt.StandardClaims)
 	customClaimsI := map[string]interface{}{
 		jsonKey: customClaims,
 	}
-	return CustomClaims{
+	return auth.CustomClaims{
 		StandardClaims: standardClaims,
 		CustomClaimsI:  customClaimsI,
 	}

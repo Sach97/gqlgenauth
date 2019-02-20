@@ -5,20 +5,19 @@ import (
 	"encoding/base64"
 	"net/http"
 
-	"github.com/Sach97/gqlgenauth/auth/jwt"
-	"github.com/Sach97/gqlgenauth/auth/user"
+	auth "github.com/Sach97/gqlgenauth/auth/jwt"
 	"github.com/go-chi/jwtauth"
 )
 
 type Chi struct {
-	AuthService *jwt.AuthService
+	AuthService *auth.AuthService
 }
 
 func (c *Chi) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		ctx := req.Context()
 		tokenString := jwtauth.TokenFromHeader(req) //TODO: remove this depedency
-		token, err := c.AuthService.ValidateJWT(tokenString, &user.MyCustomClaims{})
+		token, err := c.AuthService.ValidateJWT(tokenString, &auth.CustomClaims{})
 		if err != nil {
 			ctx = context.WithValue(ctx, "error", err) //TODO: solve this
 		}
@@ -31,7 +30,7 @@ func (c *Chi) AuthMiddleware(next http.Handler) http.Handler {
 }
 
 func (c *Chi) GetUserID(ctx context.Context) (string, error) {
-	claims := ctx.Value("claims").(*user.MyCustomClaims)
+	claims := ctx.Value("claims").(*auth.CustomClaims)
 	sub := claims.StandardClaims.Subject
 	userID, err := base64.StdEncoding.DecodeString(string(sub))
 	return string(userID), err
