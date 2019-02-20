@@ -69,6 +69,8 @@ func (u *Service) signJWT(user *model.User) (string, error) { //TODO: cleaner wa
 			XHasuraCustom:       "custom-value",
 		},
 	}
+
+	//TODO: builder pattern
 	token, err := u.jwt.SignJWT(claims)
 	return token, err
 }

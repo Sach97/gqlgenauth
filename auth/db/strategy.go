@@ -10,7 +10,7 @@ type Strategy interface {
 	OpenDB(config *ctx.Config) (*sqlx.DB, error)
 }
 
-//DB holds our DB struct
+//DB holds our DB strategy
 type DB struct {
 	Strategy Strategy
 }

@@ -9,7 +9,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-//DriverSQL holds our driver name struct
+//DriverSQL holds our driver sql name struct (postgresql, mysql, etc)
 type DriverSQL struct {
 	Name string
 }

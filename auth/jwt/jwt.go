@@ -26,20 +26,17 @@ type CustomMapClaims interface {
 
 //SignJWT signs a new jwt
 func (a *AuthService) SignJWT(customMapClaims CustomMapClaims) (string, error) {
-	//mapClaims, _ := customMapClaims.(jwt.MapClaims)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, customMapClaims)
 	tokenString, err := token.SignedString([]byte(*a.signedSecret))
-	fmt.Println(tokenString)
 	return tokenString, err
 }
 
-//ValidateJWT validates a new jwt
+//ValidateJWT validates a token string
 func (a *AuthService) ValidateJWT(tokenString string, customMapClaims CustomMapClaims) (*jwt.Token, error) {
 	token, err := jwt.ParseWithClaims(tokenString, customMapClaims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("	unexpected signing method: %v", token.Header["alg"])
 		}
-
 		return []byte(*a.signedSecret), nil
 	})
 	return token, err
