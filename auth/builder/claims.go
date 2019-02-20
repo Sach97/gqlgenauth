@@ -1,15 +1,13 @@
 package builder
 
 import (
-	"encoding/base64"
-
 	"github.com/dgrijalva/jwt-go"
 	"github.com/lann/builder"
 )
 
 type CustomClaims struct {
 	StandardClaims jwt.StandardClaims
-	CustomClaimsI  interface{}
+	CustomClaimsI  map[string]interface{}
 }
 
 type customClaimsBuilder builder.Builder
@@ -27,10 +25,10 @@ func (b customClaimsBuilder) ExpiresAt(expiresAt int64) customClaimsBuilder {
 }
 
 func (b customClaimsBuilder) ID(ID string) customClaimsBuilder {
-	return builder.Set(b, "ID", base64.StdEncoding.EncodeToString([]byte(ID))).(customClaimsBuilder)
+	return builder.Set(b, "ID", ID).(customClaimsBuilder)
 }
 
-func (b customClaimsBuilder) IssuedAt(issuedAt string) customClaimsBuilder {
+func (b customClaimsBuilder) IssuedAt(issuedAt int64) customClaimsBuilder {
 	return builder.Set(b, "IssuedAt", issuedAt).(customClaimsBuilder)
 }
 
@@ -42,8 +40,11 @@ func (b customClaimsBuilder) NotBefore(notBefore int64) customClaimsBuilder {
 	return builder.Set(b, "NotBefore", notBefore).(customClaimsBuilder)
 }
 
-func (b customClaimsBuilder) Build(customClaimsI interface{}) CustomClaims {
+func (b customClaimsBuilder) Build(jsonKey string, customClaims interface{}) CustomClaims { //Get
 	standardClaims := builder.GetStruct(b).(jwt.StandardClaims)
+	customClaimsI := map[string]interface{}{
+		jsonKey: customClaims,
+	}
 	return CustomClaims{
 		StandardClaims: standardClaims,
 		CustomClaimsI:  customClaimsI,
