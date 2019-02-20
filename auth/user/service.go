@@ -1,8 +1,6 @@
 package user
 
 import (
-	"time"
-
 	"github.com/Sach97/gqlgenauth/auth/builder"
 	gcontext "github.com/Sach97/gqlgenauth/auth/context"
 	"github.com/Sach97/gqlgenauth/auth/deeplinker"
@@ -23,6 +21,7 @@ type Service struct {
 	mailer     *mailer.Service
 	deeplinker *deeplinker.FireBaseClient
 	jwt        *jwt.AuthService
+	builder    *builder.BuilderService
 }
 
 //EmailMessage holds our email struct
@@ -31,44 +30,18 @@ type EmailMessage struct {
 	//Username
 }
 
-// type HTTPSHasuraIoJwtClaims struct {
-// 	XHasuraAllowedRoles []string `json:"x-hasura-allowed-roles"`
-// 	XHasuraDefaultRole  string   `json:"x-hasura-default-role"`
-// 	XHasuraUserID       string   `json:"x-hasura-user-id"`
-// 	XHasuraOrgID        string   `json:"x-hasura-org-id"`
-// 	XHasuraCustom       string   `json:"x-hasura-custom"`
-// }
-
-// type MyCustomClaims struct {
-// 	jwtg.StandardClaims
-// 	HTTPSHasuraIoJwtClaims HTTPSHasuraIoJwtClaims `json:"https://hasura.io/jwt/claims"`
-// }
-
 // NewUserService instantiates user service
 func NewUserService(msg *gcontext.MessageService, db *sqlx.DB, log *logging.Logger, jwt *jwt.AuthService, tokenizer *tokenizer.Tokenizer, mailer *mailer.Service,
-	deeplinker *deeplinker.FireBaseClient) *Service {
-	return &Service{msg: msg, db: db, log: log, jwt: jwt, tokenizer: tokenizer, mailer: mailer, deeplinker: deeplinker}
+	deeplinker *deeplinker.FireBaseClient, builder *builder.BuilderService) *Service {
+	return &Service{msg: msg, db: db, log: log, jwt: jwt, tokenizer: tokenizer, mailer: mailer, deeplinker: deeplinker, builder: builder}
 }
 
 //signJWT sign a user jwt
 func (u *Service) signJWT(user *model.User) (string, error) { //TODO: cleaner way to do this
+	claims := u.builder.BuildCustomClaims(user)
 	//TODO: fetch roles from db
-	now := time.Now()
-	expires := now.Add(24 * time.Hour * 30)
-	customClaims := builder.HasuraClaimsBuilder.
-		AddRole("editor").
-		AddRole("user").
-		DefaultRole("user").
-		OrgID(user.ID).
-		Custom("custom-value").
-		Build()
 
-	claims := builder.CustomClaimsBuilder.
-		Subject(user.ID).
-		ExpiresAt(expires.Unix()).
-		Issuer("test").
-		Build("https://hasura.io/jwt/claims", customClaims)
-	token, err := u.jwt.SignJWT(&claims)
+	token, err := u.jwt.SignJWT(claims)
 	return token, err
 }
 
@@ -101,6 +74,8 @@ func (u *Service) sendConfirmationEmail(user *model.User) error {
 		Sender:     sender,
 		To:         to,
 	}
+
+	//TODO: make a builder for email
 	err = u.mailer.SendEmailTemplate(inputs, "confirmation", message)
 	if err != nil {
 		u.log.Errorf("An error occured when sending email : %v", err)
@@ -119,7 +94,7 @@ func (u *Service) comparePassword(userCredentials *model.UserCredentials) (*mode
 		u.log.Errorf("Error comparing passwords : %v", err)
 	}
 	if !result {
-		return nil, u.msg.CredentialsError()
+		return nil, u.msg.CredentialsError() //TODO: inspiration from this for error message config
 	}
 	return user, nil
 }

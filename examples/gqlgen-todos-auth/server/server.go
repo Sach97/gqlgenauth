@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/99designs/gqlgen/handler"
+	"github.com/Sach97/gqlgenauth/auth/builder"
 	gcontext "github.com/Sach97/gqlgenauth/auth/context"
 	"github.com/Sach97/gqlgenauth/auth/db"
 	"github.com/Sach97/gqlgenauth/auth/deeplinker"
@@ -57,8 +58,11 @@ func main() {
 	//Message service stuffs
 	msg := gcontext.NewMessageService(cfg)
 
+	//Builder service stuffs
+	b := builder.NewBuilderService(cfg)
+
 	// User service stuffs
-	userService := user.NewUserService(msg, s, l, auth, &t, m, d) //TODO: remove ugly pointer
+	userService := user.NewUserService(msg, s, l, auth, &t, m, d, b) //TODO: remove ugly pointer
 	// credentials := model.UserCredentials{Email: "sacha.arbonel@hotmail.fr", Password: "secretpassword"}
 	// signup := u.Signup(&credentials)
 	// fmt.Println(signup)
