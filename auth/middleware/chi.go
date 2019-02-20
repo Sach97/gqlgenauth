@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"encoding/base64"
-	"fmt"
 	"net/http"
 
 	"github.com/Sach97/gqlgenauth/auth/jwt"
@@ -15,25 +14,26 @@ type Chi struct {
 	AuthService *jwt.AuthService
 }
 
-func (c Chi) AuthMiddleware(next http.Handler) http.Handler {
+func (c *Chi) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-
-		tokenString := jwtauth.TokenFromHeader(req)
+		ctx := req.Context()
+		tokenString := jwtauth.TokenFromHeader(req) //TODO: remove this depedency
 
 		token, err := c.AuthService.ValidateJWT(tokenString, &user.MyCustomClaims{})
-		if err != nil || !token.Valid { //
-			fmt.Println("we are here")
-			fmt.Errorf("Token is not valid", err)
+
+		if err != nil {
+			ctx = context.WithValue(ctx, "error", err) //TODO: solve this
 		}
-		ctx := req.Context()
-		ctx = context.WithValue(ctx, "error", err) //TODO: solve this
-		ctx = context.WithValue(ctx, "claims", token.Claims)
+		if token != nil {
+			ctx = context.WithValue(ctx, "claims", token.Claims)
+		}
+
 		req = req.WithContext(ctx)
 		next.ServeHTTP(w, req)
 	})
 }
 
-func (c Chi) GetUserID(ctx context.Context) (string, error) {
+func (c *Chi) GetUserID(ctx context.Context) (string, error) {
 	claims := ctx.Value("claims").(*user.MyCustomClaims)
 	sub := claims.StandardClaims.Subject
 	userID, err := base64.StdEncoding.DecodeString(string(sub))

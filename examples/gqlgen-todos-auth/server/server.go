@@ -80,7 +80,7 @@ func main() {
 
 	//TODO: find a better way to do this like auth
 	r := chi.NewRouter()
-	strategy := middleware.RouterStrategy{middleware.Chi{AuthService: auth}}
+	strategy := middleware.RouterStrategy{&middleware.Chi{AuthService: auth}}
 	r.Use(strategy.AuthMiddleware)
 	r.Handle("/", handler.Playground("GraphQL playground", "/query"))
 	r.Handle("/query", handler.GraphQL(gqlgen_todos_auth.NewExecutableSchema(gqlgen_todos_auth.Config{Resolvers: &gqlgen_todos_auth.Resolver{
