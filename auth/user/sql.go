@@ -11,7 +11,7 @@ import (
 func (u *Service) createUser(user *model.User) (*model.User, error) {
 	userID := xid.New()
 	user.ID = userID.String()
-	userSQL := `INSERT INTO users (id, email, password,confirmed) VALUES (:id, :email, :password, :confirmed)`
+	userSQL := `INSERT INTO user (id, email, password,confirmed) VALUES (:id, :email, :password, :confirmed)`
 	err := user.HashedPassword()
 	if err != nil {
 		u.log.Errorf("Error during hashing password : %v", err)
@@ -50,7 +50,7 @@ func (u *Service) confirmUser(userID string) (bool, error) {
 func (u *Service) findByEmail(email string) (*model.User, error) {
 	user := &model.User{}
 
-	userSQL := `SELECT * FROM users WHERE email = $1`
+	userSQL := `SELECT * FROM user WHERE email = $1`
 	udb := u.db.Unsafe()
 	row := udb.QueryRowx(userSQL, email)
 	err := row.StructScan(user)
@@ -70,7 +70,7 @@ func (u *Service) findByID(userID string) (*model.User, error) {
 	//TODO: public facing errors
 	user := &model.User{}
 
-	userSQL := `SELECT * FROM users WHERE ID = $1`
+	userSQL := `SELECT * FROM user WHERE ID = $1`
 	udb := u.db.Unsafe()
 	row := udb.QueryRowx(userSQL, userID)
 	err := row.StructScan(user)
@@ -88,7 +88,7 @@ func (u *Service) findByID(userID string) (*model.User, error) {
 // UserIDExists returns true if user exists with is id
 func (u *Service) userIDExists(userID string) bool {
 	user := &model.User{}
-	userSQL := `SELECT * FROM users WHERE ID = $1`
+	userSQL := `SELECT * FROM user WHERE ID = $1`
 	udb := u.db.Unsafe()
 	row := udb.QueryRowx(userSQL, userID)
 	err := row.StructScan(user)
@@ -106,7 +106,7 @@ func (u *Service) userIDExists(userID string) bool {
 // userEmailExists returns true if user exists with this email
 func (u *Service) userEmailExists(userEmail string) bool {
 	user := &model.User{}
-	userSQL := `SELECT * FROM users WHERE Email = $1`
+	userSQL := `SELECT * FROM user WHERE Email = $1`
 	udb := u.db.Unsafe()
 	row := udb.QueryRowx(userSQL, userEmail)
 	err := row.StructScan(user)

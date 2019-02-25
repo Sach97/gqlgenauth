@@ -13,7 +13,7 @@ type User struct {
 	CreatedAt string `db:"created_at"`
 	Confirmed bool
 	// EmailConfirmedAt string `db:"email_confirmed_at"`
-	// EmailSentAt string `db:"email_confirmed_at"`
+	// EmailSentAt string `db:"email_sent_at"`
 	Roles []*Role
 }
 

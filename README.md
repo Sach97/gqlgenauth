@@ -14,11 +14,12 @@ source .env
 
 ## TODOs
 
-- [ ] replace .env logic with config.toml where necessary
+- [x] replace .env logic with config.toml where necessary
 - [x] create jwt
+- [ ] strategy pattern at the route for choosing between Rest or Graphql
 - [ ] create roles through jwt and test it on hasura
-- [ ] create middleware
-- [ ] create a boilerplate in graphql with gqlgen (chi, mux)
+- [x] create middleware
+- [x] create a boilerplate in graphql with gqlgen (chi, mux)
 - [ ] create a rest boilerplate using different routers (chi, mux)
 
 

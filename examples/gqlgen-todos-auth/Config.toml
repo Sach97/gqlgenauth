@@ -3,15 +3,15 @@ version = 1.0
 
 [db]
 host = "localhost"
-port = "5433"
-user = "postgres-dev"
-password = "s3cr3tp4ssw0rd"
-dbname = "dev"
+port = "5432"
+user = "postgres"
+password = "postgres"
+dbname = "postgres"
 
 
 [auth]
 #jwt sign secret
-jwt-secret = "1234"
+jwt-secret = "e4f05996bffbe1fd0d1dd52dae6fec5dde3bafff4eed4064ba515cfaf3fabee905e36f3a44de129600bab880a21043ef6c21866d21d9440bc41a4325cb29405c" #length must be more than 32 for hasura
 #jwt expired time in second
 jwt-expire-in = "40000s"
 

@@ -46,6 +46,7 @@ func (r *mutationResolver) VerifyToken(ctx context.Context, token string) (bool,
 
 }
 
+//TODO: remove me resolver
 type queryResolver struct{ *Resolver }
 
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {

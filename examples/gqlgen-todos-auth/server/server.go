@@ -87,7 +87,7 @@ func main() {
 	strategy := middleware.RouterStrategy{&middleware.Chi{AuthService: auth}}
 	r.Use(strategy.AuthMiddleware)
 	r.Handle("/", handler.Playground("GraphQL playground", "/query"))
-	r.Handle("/query", handler.GraphQL(gqlgen_todos_auth.NewExecutableSchema(gqlgen_todos_auth.Config{Resolvers: &gqlgen_todos_auth.Resolver{
+	r.Handle("/v1alpha1/graphql", handler.GraphQL(gqlgen_todos_auth.NewExecutableSchema(gqlgen_todos_auth.Config{Resolvers: &gqlgen_todos_auth.Resolver{
 		UserService:    userService,
 		RouterStrategy: &strategy,
 	}})))
