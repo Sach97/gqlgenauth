@@ -66,7 +66,6 @@ func (u *Service) VerifyUserToken(token string) (bool, error) {
 	}
 
 	//TODO: handle session expired
-
 	userExists := u.userIDExists(userID)
 	if !userExists {
 		return false, fmt.Errorf("This user doesnt exists")
@@ -76,10 +75,9 @@ func (u *Service) VerifyUserToken(token string) (bool, error) {
 }
 
 func (u *Service) FindByID(userID string) (*model.User, error) {
-
 	userExists := u.userIDExists(userID)
 	if !userExists {
-		return nil, fmt.Errorf("This user doesnt exists")
+		return nil, fmt.Errorf("This user doesnt exist")
 	}
 	return u.findByID(userID)
 }

@@ -30,7 +30,7 @@ func (b *BuilderService) BuildCustomClaims(user *model.User) *jwt.CustomClaims {
 		OrgID(user.ID).
 		Custom("custom-value").
 		Build()
-
+	//TODO: find a way to iterate over roles
 	claims := CustomClaimsBuilder.
 		Subject(user.ID).
 		ExpiresAt(expires.Unix()).

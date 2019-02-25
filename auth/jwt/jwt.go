@@ -43,7 +43,7 @@ func (a *AuthService) SignJWT(customClaims *CustomClaims) (string, error) {
 func (a *AuthService) ValidateJWT(tokenString string, customClaims *CustomClaims) (*jwt.Token, error) {
 	token, err := jwt.ParseWithClaims(tokenString, customClaims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("	unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(*a.signedSecret), nil
 	})

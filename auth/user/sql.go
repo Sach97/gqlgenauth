@@ -28,7 +28,7 @@ func (u *Service) createUser(user *model.User) (*model.User, error) {
 // confirmUser is a service that sets a confirmed user
 func (u *Service) confirmUser(userID string) (bool, error) {
 	user := &model.User{}
-	updateUserSQL := `UPDATE users SET confirmed = TRUE WHERE id = $1 RETURNING confirmed;`
+	updateUserSQL := `UPDATE user SET confirmed = TRUE WHERE id = $1 RETURNING confirmed;`
 
 	udb := u.db.Unsafe()
 	row := udb.QueryRowx(updateUserSQL, userID)

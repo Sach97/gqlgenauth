@@ -19,7 +19,7 @@ func (c *Chi) AuthMiddleware(next http.Handler) http.Handler {
 		tokenString := jwtauth.TokenFromHeader(req) //TODO: remove this depedency
 		token, err := c.AuthService.ValidateJWT(tokenString, &auth.CustomClaims{})
 		if err != nil {
-			ctx = context.WithValue(ctx, "error", err) //TODO: solve this
+			ctx = context.WithValue(ctx, "error", err) //TODO: refactor this
 		}
 		if token != nil {
 			ctx = context.WithValue(ctx, "claims", token.Claims)
