@@ -1,6 +1,8 @@
 package user
 
 import (
+	"fmt"
+
 	"github.com/Sach97/gqlgenauth/auth/builder"
 	gcontext "github.com/Sach97/gqlgenauth/auth/context"
 	"github.com/Sach97/gqlgenauth/auth/deeplinker"
@@ -39,8 +41,8 @@ func NewUserService(msg *gcontext.MessageService, db *sqlx.DB, log *logging.Logg
 //signJWT sign a user jwt
 func (u *Service) signJWT(user *model.User) (string, error) { //TODO: cleaner way to do this
 	claims := u.builder.BuildCustomClaims(user)
+	fmt.Println(claims)
 	//TODO: fetch roles from db
-
 	token, err := u.jwt.SignJWT(claims)
 	return token, err
 }

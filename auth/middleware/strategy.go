@@ -6,7 +6,7 @@ import (
 )
 
 type Strategy interface {
-	GetUserID(ctx context.Context) (string, error)
+	GetUserID(ctx context.Context) string
 	AuthMiddleware(next http.Handler) http.Handler
 }
 
@@ -14,7 +14,7 @@ type RouterStrategy struct {
 	Strategy Strategy
 }
 
-func (s *RouterStrategy) GetUserID(ctx context.Context) (string, error) {
+func (s *RouterStrategy) GetUserID(ctx context.Context) string {
 	return s.Strategy.GetUserID(ctx)
 }
 

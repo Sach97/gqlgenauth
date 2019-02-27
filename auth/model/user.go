@@ -4,6 +4,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+//TODO: add strategy other than bcrypt
+
 //User struct represents our User model
 type User struct {
 	ID        string

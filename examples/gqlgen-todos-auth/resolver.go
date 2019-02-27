@@ -50,7 +50,7 @@ func (r *mutationResolver) VerifyToken(ctx context.Context, token string) (bool,
 type queryResolver struct{ *Resolver }
 
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	userID, _ := r.RouterStrategy.GetUserID(ctx)
+	userID := r.RouterStrategy.GetUserID(ctx)
 	//TODO: if userid exists retrive user
 	return r.UserService.FindByID(userID)
 }

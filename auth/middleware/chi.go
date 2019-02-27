@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"context"
-	"encoding/base64"
 	"net/http"
 
+	"github.com/Sach97/gqlgenauth/auth/builder"
 	auth "github.com/Sach97/gqlgenauth/auth/jwt"
 	"github.com/go-chi/jwtauth"
 )
@@ -17,7 +17,7 @@ func (c *Chi) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		ctx := req.Context()
 		tokenString := jwtauth.TokenFromHeader(req) //TODO: remove this depedency
-		token, err := c.AuthService.ValidateJWT(tokenString, &auth.CustomClaims{})
+		token, err := c.AuthService.ValidateJWT(tokenString, &builder.CustomClaims{})
 		if err != nil {
 			ctx = context.WithValue(ctx, "error", err) //TODO: refactor this
 		}
@@ -29,11 +29,11 @@ func (c *Chi) AuthMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (c *Chi) GetUserID(ctx context.Context) (string, error) {
-	claims := ctx.Value("claims").(*auth.CustomClaims)
+func (c *Chi) GetUserID(ctx context.Context) string {
+	claims := ctx.Value("claims").(*builder.CustomClaims)
 	sub := claims.StandardClaims.Subject
-	userID, err := base64.StdEncoding.DecodeString(string(sub))
-	return string(userID), err
+
+	return sub
 }
 
 //usage

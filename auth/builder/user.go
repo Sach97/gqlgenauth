@@ -1,11 +1,12 @@
 package builder
 
 import (
+	"errors"
 	"time"
 
 	"github.com/Sach97/gqlgenauth/auth/context"
-	"github.com/Sach97/gqlgenauth/auth/jwt"
 	"github.com/Sach97/gqlgenauth/auth/model"
+	"github.com/dgrijalva/jwt-go"
 )
 
 type BuilderService struct {
@@ -20,21 +21,30 @@ func NewBuilderService(cfg *context.Config) *BuilderService {
 	}
 }
 
-func (b *BuilderService) BuildCustomClaims(user *model.User) *jwt.CustomClaims {
+type CustomClaims struct {
+	StandardClaims jwt.StandardClaims
+	HasuraClaims   HasuraClaims `json:"https://hasura.io/jwt/claims"`
+}
+
+//hacky but I did'nt find better wsay to do this
+func (c CustomClaims) Valid() error {
+	return errors.New("")
+
+}
+
+func (b *BuilderService) BuildCustomClaims(user *model.User) *CustomClaims {
 	now := time.Now()
 	expires := now.Add(24 * time.Hour * 30) //TODO:get expiration from config
-	customClaims := HasuraClaimsBuilder.
-		AddRole("editor").
+	hasuraClaims := HasuraClaimsBuilder.
 		AddRole("user").
 		DefaultRole("user").
-		OrgID(user.ID).
+		UserID(user.ID).
 		Custom("custom-value").
 		Build()
 	//TODO: find a way to iterate over roles
-	claims := CustomClaimsBuilder.
+	standardClaims := StandardClaimsBuilder.
 		Subject(user.ID).
 		ExpiresAt(expires.Unix()).
-		Issuer("test").
-		Build("https://hasura.io/jwt/claims", customClaims)
-	return &claims
+		Build()
+	return &CustomClaims{StandardClaims: standardClaims, HasuraClaims: hasuraClaims}
 }
