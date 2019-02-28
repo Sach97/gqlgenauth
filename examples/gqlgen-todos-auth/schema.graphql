@@ -1,7 +1,7 @@
 scalar DateTime
 
 type Query {
-  me: User
+  hello: String!
 }
 
 type Mutation {
@@ -16,11 +16,4 @@ type AuthPayload {
 
 type Instructions {
   text: String!
-}
-
-type User {
-  id: ID!
-  email: String!
-  name: String!
-  createdAt: DateTime!
 }

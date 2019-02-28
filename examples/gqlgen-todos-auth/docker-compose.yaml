@@ -26,5 +26,6 @@ services:
       HASURA_GRAPHQL_JWT_SECRET: '{"type":"HS256","key": "e4f05996bffbe1fd0d1dd52dae6fec5dde3bafff4eed4064ba515cfaf3fabee905e36f3a44de129600bab880a21043ef6c21866d21d9440bc41a4325cb29405c"}'
       ## uncomment next line to set an admin secret
       HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey #required if HASURA_GRAPHQL_JWT_SECRET specified
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
 volumes:
   db_data:
