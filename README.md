@@ -1,4 +1,4 @@
-# gqlgenauth
+# github.com/Sach97/ninshoo
 A package for dearling with user registration and authentification in go 
 
 WIP.
