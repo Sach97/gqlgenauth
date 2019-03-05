@@ -4,7 +4,7 @@ services:
     image: postgres
     restart: always
     volumes:
-    - ./data/1.0/1_users.sql:/docker-entrypoint-initdb.d/1_users.sql 
+    #- ./data/1.0/1_users.sql:/docker-entrypoint-initdb.d/1_users.sql 
     - db_data:/var/lib/postgresql/data
     ports:
       - 5432:5432
