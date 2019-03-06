@@ -63,7 +63,7 @@ func LoadConfig(path string) *Config {
 
 		//Tokenizer
 		RedisURL:      config.Get("tokenizer.redis-url").(string),
-		RedisPassword: config.Get("tokenizer.password").(string),
+		RedisPassword: os.Getenv("REDISPASSWORD"),
 		//JWT
 		JWTSecret:   config.Get("auth.jwt-secret").(string),
 		JWTExpireIn: config.GetDuration("auth.jwt-expire-in"),

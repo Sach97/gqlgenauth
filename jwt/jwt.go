@@ -18,6 +18,9 @@ type AuthService struct {
 
 //NewAuthService instantiates a new AuthService
 func NewAuthService(config *context.Config) *AuthService {
+	if config.JWTSecret == "" {
+		panic("You must fill JWTSECRET env variable with your jwt secret ")
+	}
 	return &AuthService{&config.AppName, &config.JWTSecret, &config.JWTExpireIn}
 }
 
@@ -38,3 +41,6 @@ func (a *AuthService) ValidateJWT(tokenString string, customClaims *builder.Cust
 	})
 	return token, err
 }
+
+//TODO: strategy pattern for other algorithms than HMAC
+//TODO: strategy pattern stateful authentification
