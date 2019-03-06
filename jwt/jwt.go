@@ -19,7 +19,7 @@ type AuthService struct {
 //NewAuthService instantiates a new AuthService
 func NewAuthService(config *context.Config) *AuthService {
 	if config.JWTSecret == "" {
-		panic("You must fill JWTSECRET env variable with your jwt secret ")
+		panic("You must set JWTSECRET env variable")
 	}
 	return &AuthService{&config.AppName, &config.JWTSecret, &config.JWTExpireIn}
 }

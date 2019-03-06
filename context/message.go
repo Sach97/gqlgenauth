@@ -16,6 +16,7 @@ type MessageService struct {
 
 //TODO: load messages from config or template
 //TODO: strategy pattern for graphql errors
+
 func NewMessageService(cfg *Config) *MessageService {
 	return &MessageService{
 		AppName: cfg.AppName,
