@@ -4,6 +4,8 @@ github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/Sach97/ninshoo v0.0.1-alpha h1:Eftyb+SdHRxIZG9bBFQ7q47NZOb+CUt8uDBRaq6/YmM=
 github.com/Sach97/ninshoo v0.0.1-alpha/go.mod h1:wxlGEGi2a1B0k9CNbG0axnOBYuy8sbQTSv17JMTv9vc=
+github.com/Sach97/ninshoo v0.0.1-alpha1 h1:Badpnn4L+aRXGxCguH5pCvGRnJ+Do8WesJhV0UDuaTQ=
+github.com/Sach97/ninshoo v0.0.1-alpha1/go.mod h1:wxlGEGi2a1B0k9CNbG0axnOBYuy8sbQTSv17JMTv9vc=
 github.com/agnivade/levenshtein v1.0.1 h1:3oJU7J3FGFmyhn8KHjmVaZCN5hxTr7GxgRue+sxIXdQ=
 github.com/agnivade/levenshtein v1.0.1/go.mod h1:CURSv5d9Uaml+FovSIICkLbAUZ9S4RqaHDIsdSBg7lM=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883 h1:bvNMNQO63//z+xNgfBlViaCIJKLlCJ6/fmUseuG0wVQ=

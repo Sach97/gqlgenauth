@@ -1,7 +1,6 @@
 package tokenizer
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/Sach97/ninshoo/context"
@@ -31,10 +30,9 @@ func NewRedisClient(config *context.Config) *RedisClient {
 }
 
 //Ping pings redis to see if we are connected
-func (client *RedisClient) Ping() error {
-	pong, err := client.redisdb.Ping().Result()
-	fmt.Println(pong, err)
-	return err
+func (client *RedisClient) Ping() (string, error) {
+	return client.redisdb.Ping().Result()
+
 }
 
 // GenerateToken generate a random string

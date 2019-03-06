@@ -11,6 +11,9 @@ services:
   redis:
     image: redis
     container_name: cache
+    command: redis-server --requirepass "mysecretredispassword"
+    # environment:
+    #   REDIS_PASSWORD: mysecretredispassword
     ports:
      - 6379:6379
   graphql-engine:
