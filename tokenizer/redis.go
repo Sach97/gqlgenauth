@@ -15,8 +15,12 @@ type RedisClient struct {
 
 //NewRedisClient creates a new redis connexion
 func NewRedisClient(config *context.Config) *RedisClient {
-	if config.RedisPassword == "" {
-		panic("You must fill REDISPASSWORD env variable with your redis password")
+
+	switch {
+	case config.RedisPassword == "":
+		panic("You must set REDISPASSWORD env variable")
+	case config.RedisURL == "":
+		panic("You must set REDISURL env variable")
 	}
 
 	redisdb := redis.NewClient(&redis.Options{

@@ -18,6 +18,20 @@ type DriverSQL struct {
 
 //OpenDB open a Sql connexion
 func (d DriverSQL) OpenDB(config *ctx.Config) (*sqlx.DB, error) {
+
+	log.Println("Loading config db config... ")
+	switch {
+	case config.DBUser == "":
+		panic("You must set DBUSER env variable")
+	case config.DBHost == "":
+		panic("You must set DBHOST env variable")
+	case config.DBPassword == "":
+		panic("You must set DBPASSWORD env variable")
+	case config.DBPort == "":
+		panic("You must set DBPORT env variable")
+	case config.DBName == "":
+		panic("You must set DBNAME env variable")
+	}
 	log.Println("Database is connecting... ")
 	db, err := sqlx.Open(d.Name, fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", config.DBHost, config.DBPort, config.DBUser, config.DBPassword, config.DBName))
 	fmt.Println(config.DBHost, config.DBPort, config.DBUser, config.DBPassword, config.DBName)

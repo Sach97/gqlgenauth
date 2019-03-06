@@ -64,7 +64,7 @@ type Warning struct {
 // NewFireBaseClient instantiate a new Firebase Client
 func NewFireBaseClient(config *context.Config) *FireBaseClient {
 	if config.FirebaseAPIKey == "" {
-		panic("You must set your API key")
+		panic("You must set FIREBASE env variable")
 	}
 
 	return &FireBaseClient{

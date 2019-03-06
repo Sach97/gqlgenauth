@@ -52,7 +52,7 @@ func (s *Service) NewMessage(inputs Inputs) Message {
 //NewMailer instantiates the mailer service from config file
 func NewMailer(config *context.Config) *Service {
 	if config.SMTPPassword == "" {
-		panic("You must set your smtp password")
+		panic("You must set SMTPPASSWORD env variable")
 	}
 	return &Service{
 		Identity: config.SMTPIdentity,

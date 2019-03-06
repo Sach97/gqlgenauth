@@ -62,10 +62,11 @@ func LoadConfig(path string) *Config {
 		AppName: config.Get("app-name").(string),
 
 		//Tokenizer
-		RedisURL:      config.Get("tokenizer.redis-url").(string),
+		RedisURL:      os.Getenv("REDISURL"),
 		RedisPassword: os.Getenv("REDISPASSWORD"),
+
 		//JWT
-		JWTSecret:   config.Get("auth.jwt-secret").(string),
+		JWTSecret:   os.Getenv("JWTSECRET"),
 		JWTExpireIn: config.GetDuration("auth.jwt-expire-in"),
 
 		//SMTP
@@ -76,11 +77,11 @@ func LoadConfig(path string) *Config {
 		SMTPAddress:  config.Get("smtp.address").(string),
 
 		//DB
-		DBHost:     config.Get("db.host").(string),
-		DBPort:     config.Get("db.port").(string),
-		DBUser:     config.Get("db.user").(string),
-		DBPassword: config.Get("db.password").(string),
-		DBName:     config.Get("db.dbname").(string),
+		DBHost:     os.Getenv("DBHOST"),
+		DBPort:     os.Getenv("DBPORT"),
+		DBUser:     os.Getenv("DBUSER"),
+		DBPassword: os.Getenv("DBPASSWORD"),
+		DBName:     os.Getenv("DBNAME"),
 
 		//Firebase
 		FirebaseAPIKey:        os.Getenv("FIREBASE"),
@@ -94,5 +95,3 @@ func LoadConfig(path string) *Config {
 		LogFormat: config.Get("log.log-format").(string),
 	}
 }
-
-//TODO: strategy for loading from env variable
