@@ -21,6 +21,7 @@ source .env
 - [x] create middleware
 - [x] create a boilerplate in graphql with gqlgen (chi, mux)
 - [ ] create a rest boilerplate using different routers (chi, mux)
+- [ ] tests
 
 
 ## Inspirations
