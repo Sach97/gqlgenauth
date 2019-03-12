@@ -16,11 +16,12 @@ source .env
 
 - [x] replace .env logic with config.toml where necessary
 - [x] create jwt
-- [ ] strategy pattern at the route for choosing between Rest or Graphql
+- [ ] strategy pattern at the root for choosing between Rest or Graphql
 - [ ] create roles through jwt and test it on hasura
 - [x] create middleware
 - [x] create a boilerplate in graphql with gqlgen (chi, mux)
 - [ ] create a rest boilerplate using different routers (chi, mux)
+- [ ] update examples with .gitlab-ci.yaml for CI/CD integrations with kubernetes
 - [ ] tests
 
 
