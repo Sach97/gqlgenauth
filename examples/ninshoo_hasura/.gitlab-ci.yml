@@ -1,0 +1,45 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+  - setup
+  - build
+  
+# before_script:
+#   - git config --global url."https://${CI_JOB_TOKEN}:x-oauth-basic@github.com/Sach97/ninshoo.git".insteadOf "https://github.com/Sach97/ninshoo.git"
+#   - echo -e "machine github.com\nlogin x-oauth-basic\npassword ${CI_JOB_TOKEN}" > ~/.netrc
+  
+setup:
+  stage: setup
+  image: golang:1.12.0-stretch
+  before_script:
+  - git config --global url."https://${CI_JOB_TOKEN}:x-oauth-basic@github.com/Sach97/ninshoo.git".insteadOf "https://github.com/Sach97/ninshoo.git"
+  script:
+    - go mod vendor -v
+  artifacts:
+    paths:
+     - vendor/
+
+
+build-master:
+  stage: build
+  script:
+    - docker info
+    - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" "${CI_REGISTRY}"
+    - docker build --pull -t "$CI_REGISTRY_IMAGE" .
+    - docker push "$CI_REGISTRY_IMAGE"
+  only:
+    - master
+    
+
+build:
+  stage: build
+  script:
+    - docker info
+    - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" "${CI_REGISTRY}"
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+  except:
+    - master

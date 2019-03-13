@@ -28,11 +28,12 @@ type Config struct {
 	SMTPAddress  string
 
 	//DB
-	DBHost     string
-	DBPort     string
-	DBUser     string
-	DBPassword string
-	DBName     string
+	DBUrl string
+	// DBHost     string
+	// DBPort     string
+	// DBUser     string
+	// DBPassword string
+	// DBName     string
 
 	//Firebase
 	FirebaseAPIKey        string
@@ -77,11 +78,12 @@ func LoadConfig(path string) *Config {
 		SMTPAddress:  config.Get("smtp.address").(string),
 
 		//DB
-		DBHost:     os.Getenv("DBHOST"),
-		DBPort:     os.Getenv("DBPORT"),
-		DBUser:     os.Getenv("DBUSER"),
-		DBPassword: os.Getenv("DBPASSWORD"),
-		DBName:     os.Getenv("DBNAME"),
+		DBUrl: os.Getenv("DBURL"),
+		// DBHost:     os.Getenv("DBHOST"),
+		// DBPort:     os.Getenv("DBPORT"),
+		// DBUser:     os.Getenv("DBUSER"),
+		// DBPassword: os.Getenv("DBPASSWORD"),
+		// DBName:     os.Getenv("DBNAME"),
 
 		//Firebase
 		FirebaseAPIKey:        os.Getenv("FIREBASE"),
