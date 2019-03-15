@@ -79,11 +79,14 @@ func (s *Service) SendEmail(message Message) error {
 
 //SendEmailTemplate sends a templated email
 func (s *Service) SendEmailTemplate(inputs Inputs, emailType string, data interface{}) error {
-
-	t := template.Must(template.ParseFiles(fmt.Sprintf("%s.html", emailType)))
+	html, err := template.ParseFiles(fmt.Sprintf("%s.html", emailType))
+	if err != nil {
+		return err
+	}
+	t := template.Must(html, err)
 
 	var buff bytes.Buffer
-	err := t.Execute(&buff, data)
+	err = t.Execute(&buff, data)
 	if err != nil {
 		return err
 	}
