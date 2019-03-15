@@ -106,8 +106,10 @@ func (c *FireBaseClient) GetDynamicLink(token string, confirm bool) (string, err
 
 	// add header
 	req.Header.Add("content-type", "application/json")
-	resp, _ := http.DefaultClient.Do(req)
-
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("An error occured during POST request : %s", err)
+	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == 200 {

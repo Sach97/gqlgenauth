@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"net"
 	"net/smtp"
 
 	"github.com/Sach97/ninshoo/context"
@@ -61,6 +62,14 @@ func NewMailer(config *context.Config) *Service {
 		Host:     config.SMTPHost,
 		Address:  config.SMTPAddress,
 	}
+}
+
+func (s *Service) Ping() error {
+	_, err := net.Dial("tcp", s.Address)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 //TODO: handler error message code for example Sender syntax error 501

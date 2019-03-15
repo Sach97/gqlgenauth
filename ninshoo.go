@@ -37,6 +37,11 @@ func NewNinshoo() *user.Service {
 	//Log stuffs
 	l := utils.NewLoggerService(cfg)
 
+	err = m.Ping()
+	if err != nil {
+		l.Errorf("Can't ping smtp port : %s", err)
+	}
+
 	//JWT stuffs
 	auth := jwt.NewAuthService(cfg)
 
